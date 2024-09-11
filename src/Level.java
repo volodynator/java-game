@@ -1,40 +1,87 @@
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+
 
 public class Level {
-    BufferedImage water = ImageIO.read(new File("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Tiles\\liquidWaterTop_mid.png"));
-    BufferedImage grass = ImageIO.read(new File("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Tiles\\grassMid.png"));
+    BufferedImage levelImg, resultingLevelImg;
+    Vec2 lvlSize;
+    float offsetX;
+    public static ArrayList<BufferedImage> tileImages = new ArrayList<>();
+    public int tileSize = 70;
 
-    public BufferedImage getLevel() {
-        return level;
-    }
-
-    BufferedImage level;
-
-    public Level(File file) throws IOException {
+    public Level(String levelMapPath) {
         try {
-            BufferedImage levelImage = ImageIO.read(file);
-            BufferedImage generatedImage = new BufferedImage(70*levelImage.getWidth(), 70*levelImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics g2d = generatedImage.createGraphics();
-            for (int x = 0; x < levelImage.getWidth(); x++){
-                for (int y = 0; y < levelImage.getHeight(); y++){
-                    Color color = new Color(levelImage.getRGB(x, y));
-                    if (color.equals(Color.BLUE)){
-                        g2d.drawImage(water, x*70, y*70, water.getWidth(), water.getHeight(), null);
-                    }
-                    else if (color.equals(Color.BLACK)){
-                        g2d.drawImage(grass, x*70, y*70, grass.getWidth(), grass.getHeight(), null);
-                    }
-                }
-            }
-            level = generatedImage;
+            lvlSize = new Vec2(0, 0);
+            offsetX = 0.0f;
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            try {
+                // Level image
+                levelImg = ImageIO.read(new File(levelMapPath));
+
+                // Tile images
+                tileImages.add(ImageIO.read(new File("./assets/Tiles/grassMid.png")));
+                tileImages.add(ImageIO.read(new File("./assets/Tiles/liquidWaterTop_mid.png")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            initLevel();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+    public void update() {
+        if (offsetX < 0)
+            offsetX = 0;
+
+        if (offsetX > resultingLevelImg.getWidth() - 1000)
+            offsetX = resultingLevelImg.getWidth() - 1000;
+    }
+
+    public void initLevel() {
+        lvlSize.x = tileSize * levelImg.getWidth(null);
+        lvlSize.y = tileSize * levelImg.getHeight(null);
+
+        resultingLevelImg = new BufferedImage((int) lvlSize.x, (int) lvlSize.y, BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D g2d;
+        g2d = (Graphics2D) resultingLevelImg.getGraphics();
+
+        for (int y = 0; y < levelImg.getHeight(null); y++) {
+            for (int x = 0; x < levelImg.getWidth(null); x++) {
+
+                Color color = new Color(levelImg.getRGB(x, y));
+
+                int tileIndex = -1;
+
+                // Compare color of pixels in order to select the corresponding tiles
+
+                if (color.equals(Color.BLACK))
+                    tileIndex = 0;
+                if (color.equals(Color.BLUE))
+                    tileIndex = 1;
+
+                if (tileIndex < 0)
+                    continue;
+
+                g2d.drawImage(tileImages.get(tileIndex), null, x * tileSize, y * tileSize);
+            }
+        }
+        g2d.dispose();
+    }
+
+    public Image getResultingImage() {
+        return resultingLevelImg;
+    }
+    public int getHeight(){
+        return (int) lvlSize.y;
+    }
 }
+

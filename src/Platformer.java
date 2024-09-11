@@ -4,11 +4,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.Serial;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
@@ -18,13 +18,14 @@ public class Platformer extends JFrame {
 	@Serial
 	private static final long serialVersionUID = 5736902251450559962L;
 
-	BufferedImage levelImg;
-	int viewX = 0;
-	int viewY = 0;
+	private Level l = null;
+	Player player;
+	BufferStrategy bufferStrategy;
+
 	public Platformer() {
 		//exit program when window is closed
-		this.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
 		});
@@ -36,6 +37,7 @@ public class Platformer extends JFrame {
 		fc.setFileFilter(filter);
 		int result = fc.showOpenDialog(this);
 		File selectedFile = new File("");
+		addKeyListener(new AL(this));
 
 		if (result == JFileChooser.APPROVE_OPTION) {
 			selectedFile = fc.getSelectedFile();
@@ -46,38 +48,82 @@ public class Platformer extends JFrame {
 		}
 
 		try {
-			Level level = new Level(selectedFile);
-			levelImg = level.getLevel();
-			addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if (e.getKeyCode()==KeyEvent.VK_LEFT){
-						if (viewX>=0){
-							viewX-=50;
-							repaint();
-						}
-					}
-					if (e.getKeyCode()==KeyEvent.VK_RIGHT){
-						if (viewX<levelImg.getWidth()){
-							viewX+=50;
-							repaint();
-						}
-					}
-				}
-			});
+			l = new Level(selectedFile.getAbsolutePath());
+			player = new Player();
+			createBufferStrategy(2);
+			bufferStrategy = this.getBufferStrategy();
 
-			this.setBounds(0, 0, 1000, 350);
+			this.setBounds(0, 0, 1000, 10 * 70);
 			this.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
+	private void updateGameStateAndRepaint() {
+		l.update();
+		int playerCenterX = player.x + player.getImage().getWidth() / 2;
+		System.out.println("Off: "+l.offsetX);
+		System.out.println("Player : "+player.x);
+		int maxOffsetX = l.getResultingImage().getWidth(null) - this.getWidth();
+
+		l.offsetX = Math.max(0, Math.min(playerCenterX - this.getWidth() / 2, maxOffsetX));
+		repaint();
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		Graphics2D g2d = (Graphics2D)g;
-		g.drawImage(levelImg, 0, 0, 1000, 350, viewX, viewY, viewX + 1000, viewY + 350, null);
+		Graphics2D g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
+		try {
+			draw(g2);
+		} finally {
+			g2.dispose();
+		}
+		bufferStrategy.show();
+	}
 
+	private void draw(Graphics2D g2d) {
+		BufferedImage img_level = (BufferedImage) l.getResultingImage();
+		BufferedImage visibleLevel =
+				img_level.getSubimage((int) l.offsetX, 0, 1000, l.getHeight());
+		g2d.drawImage(visibleLevel, 0, 0, this);
+		g2d.drawImage(player.getImage(), player.x - (int) l.offsetX, player.y, this);
+	}
+
+	public class AL extends KeyAdapter {
+		Platformer p;
+
+		public AL(Platformer p) {
+			super();
+			this.p = p;
+		}
+
+		@Override
+		public void keyPressed(KeyEvent event) {
+			int keyCode = event.getKeyCode();
+
+			if (keyCode == KeyEvent.VK_ESCAPE) {
+				dispose();
+			}
+
+			if (keyCode == KeyEvent.VK_LEFT) {
+				player.move(-3, 0);
+			}
+
+			if (keyCode == KeyEvent.VK_RIGHT) {
+				player.move(3, 0);
+			}
+			if (keyCode == KeyEvent.VK_UP) {
+				player.move(0, -3);
+			}
+			if (keyCode == KeyEvent.VK_DOWN) {
+				player.move(0, 3);
+			}
+			updateGameStateAndRepaint();
+		}
+	}
+
+	public Player getPlayer() {
+		return player;
 	}
 }
