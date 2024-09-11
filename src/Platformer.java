@@ -1,47 +1,83 @@
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.io.File;
-import java.io.IOException;
 import java.io.Serial;
-import java.nio.file.Path;
+
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Platformer extends JFrame {
 	@Serial
 	private static final long serialVersionUID = 5736902251450559962L;
 
+	BufferedImage levelImg;
+	int viewX = 0;
+	int viewY = 0;
 	public Platformer() {
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setTitle("HelloWorld");
-		this.setBounds(0, 0, 320, 240);
-		this.setVisible(true);
+		//exit program when window is closed
+		this.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				System.exit(0);
+			}
+		});
+
+		JFileChooser fc = new JFileChooser();
+		fc.setCurrentDirectory(new File("./"));
+		fc.setDialogTitle("Select input image");
+		FileFilter filter = new FileNameExtensionFilter("Level image (.bmp)", "bmp");
+		fc.setFileFilter(filter);
+		int result = fc.showOpenDialog(this);
+		File selectedFile = new File("");
+
+		if (result == JFileChooser.APPROVE_OPTION) {
+			selectedFile = fc.getSelectedFile();
+			System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+		} else {
+			dispose();
+			System.exit(0);
+		}
+
+		try {
+			Level level = new Level(selectedFile);
+			levelImg = level.getLevel();
+			addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode()==KeyEvent.VK_LEFT){
+						if (viewX>=0){
+							viewX-=50;
+							repaint();
+						}
+					}
+					if (e.getKeyCode()==KeyEvent.VK_RIGHT){
+						if (viewX<levelImg.getWidth()){
+							viewX+=50;
+							repaint();
+						}
+					}
+				}
+			});
+
+			this.setBounds(0, 0, 1000, 350);
+			this.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		Graphics2D g2d = (Graphics2D) g; // cast to Graphics2D
-		Line2D.Double line = new Line2D.Double(20.0, 50.0, 50.0, 200.0);
-		g2d.draw(line);
-		Rectangle2D.Double rect = new Rectangle2D.Double(100.0, 50.0, 60.0, 80.0);
-		g2d.draw(rect); // also try g2d.fill(rect);
-		g2d.fill(rect);
-		Ellipse2D.Double circle = new Ellipse2D.Double(200.0, 100.0, 80.0, 80.0);
-		g2d.draw(circle); // also try g2d.fill(circle);
-		g2d.fill(circle);
-		try {
-			BufferedImage image = ImageIO.read(new File("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\testImg.bmp"));
-			ImageObserver observer = new ImageObserver() {
-				@Override
-				public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
-					return true;
-				}
-			};
-			g2d.drawImage(image, 0, 0, 320, 240, observer);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		Graphics2D g2d = (Graphics2D)g;
+		g.drawImage(levelImg, 0, 0, 1000, 350, viewX, viewY, viewX + 1000, viewY + 350, null);
+
 	}
 }
