@@ -36,4 +36,7 @@ public class Tile {
     public void onCollision(Player p){
         p.lastValidPosition = bb.min.add(new Vec2(0,-Tile.tileSize*2));
     }
+    public void onCollisionWithEnemy(Enemy enemy){
+        enemy.lastValidPosition = bb.min.add(new Vec2(0,-Tile.tileSize*2));
+    }
 }

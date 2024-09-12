@@ -7,7 +7,7 @@ public class ManaRecovery extends Item{
     public ManaRecovery(Level level, int points) throws IOException {
         this.points = points;
         this.level = level;
-        this.icon = ImageIO.read(new File("assets/Items/plantPurple.png"));
+        this.icon = ImageIO.read(new File("assets/ourAssets/mana.png"));
     }
 
     @Override

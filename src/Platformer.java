@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -30,7 +31,10 @@ public class Platformer extends JFrame {
 	private Level l = null;
 	private boolean isFullScreen = false;
 	BufferStrategy bufferStrategy;
-	java.util.List<Bullet> bullets = new ArrayList<>();
+	java.util.List<Bullet> bullets = new CopyOnWriteArrayList<>();
+	java.util.List<Bullet> bulletsToRemove = new CopyOnWriteArrayList<>();
+
+
 	private int selectedItem = 0;
 
 
@@ -67,7 +71,7 @@ public class Platformer extends JFrame {
 		}
 
 		try {
-			l = new Level(selectedFile.getAbsolutePath(), BasePath + "background0.png");
+			l = new Level(selectedFile.getAbsolutePath(), "assets/ourAssets/redBackground.jpg");
 			p = l.player;
 
 			this.setBounds(0, 0, 1000, 12 * 70);
@@ -77,7 +81,13 @@ public class Platformer extends JFrame {
 
 				@Override
 				public void run() {
-					updateGameStateAndRepaint();
+					try {
+						updateGameStateAndRepaint();
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					} catch (NotEnoughManaExeption e) {
+						throw new RuntimeException(e);
+					}
 				}
 
 			}, 0, 10);
@@ -97,21 +107,19 @@ public class Platformer extends JFrame {
 		p.points = 0;
 	}
 
-	private void updateGameStateAndRepaint() {
+	private void updateGameStateAndRepaint() throws IOException, NotEnoughManaExeption {
 		l.update();
 		p.update();
-		checkCollision();
-		repaint();
-		Iterator<Bullet> bulletIterator = bullets.iterator();
-		while (bulletIterator.hasNext()) {
-			Bullet bullet = bulletIterator.next();
-			bullet.update();
-
-			if (bullet.delete()) {
-				bulletIterator.remove();
-			}
+		for (Enemy enemy : l.enemies) {
+			enemy.update();
 		}
+		checkCollision();
+		checkEnemiesCollision();
+		bullets.removeAll(bulletsToRemove);
+		bulletsToRemove.clear();
+		repaint();
 	}
+
 
 	private void checkCollision() {
 		float playerPosX = p.pos.x;
@@ -122,16 +130,30 @@ public class Platformer extends JFrame {
 		p.collidesTop = false;
 		p.collides = false;
 
+		if (!bullets.isEmpty()) {
+			Iterator<Bullet> bulletIterator = bullets.iterator();
+			while (bulletIterator.hasNext()) {
+				Bullet bullet = bulletIterator.next();
+				bullet.update();
+
+				if (p.boundingBox.intersect(bullet.boundingBox)) {
+					System.out.println("Collision");
+					p.damage(bullet.damage);
+
+					bulletsToRemove.add(bullet);
+				}
+			}
+		}
+
 		// Collision
 		for (int i = 0; i < l.tiles.size(); i++) {
 
 			Tile tile = l.tiles.get(i);
 
-			Vec2 overlapSize = tile.bb.OverlapSize(p.boundingBox);
-
 			float epsilon = 8.f; // experiment with this value. If too low,the player might get stuck when walking over the
-			                     // ground. If too high, it can cause glitching inside/through walls
+			// ground. If too high, it can cause glitching inside/through walls
 
+			Vec2 overlapSize = tile.bb.OverlapSize(p.boundingBox);
 
 			if (overlapSize.x >= 0 && overlapSize.y >= 0 && Math.abs(overlapSize.x + overlapSize.y) >= epsilon) {
 
@@ -158,12 +180,63 @@ public class Platformer extends JFrame {
 				p.collides = true;
 				tile.onCollision(p);
 				p.updateBoundingBox();
-				if (p.hp == 0)
+				if (p.hp <= 0)
 					try {
 						gameOver();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+			}
+		}
+	}
+	private void checkEnemiesCollision() {
+		for (Enemy enemy: l.enemies) {
+			float enemyPosX = enemy.pos.x;
+
+			enemy.collidesDown = false;
+			enemy.collidesLeft = false;
+			enemy.collidesRight = false;
+			enemy.collidesTop = false;
+			enemy.collides = false;
+
+			// Collision
+			for (int i = 0; i < l.tiles.size(); i++) {
+
+				Tile tile = l.tiles.get(i);
+
+				float epsilon = 8.f; // experiment with this value. If too low,the player might get stuck when walking over the
+				// ground. If too high, it can cause glitching inside/through walls
+
+				Vec2 overlapSize = tile.bb.OverlapSize(enemy.boundingBox);
+
+				if (overlapSize.x >= 0 && overlapSize.y >= 0 && Math.abs(overlapSize.x + overlapSize.y) >= epsilon) {
+
+					if(tile.hasRigidCollision) {
+						if (Math.abs(overlapSize.x) > Math.abs(overlapSize.y)) {// Y overlap correction
+
+							if (enemy.boundingBox.min.y + enemy.boundingBox.max.y > tile.bb.min.y + tile.bb.max.y) { // player comes from below
+								enemy.pos.y += overlapSize.y;
+								enemy.collidesTop = true;
+							} else { // player comes from above
+								enemy.pos.y -= overlapSize.y;
+								enemy.collidesDown = true;
+							}
+						} else { // X overlap correction
+							if (enemy.boundingBox.min.x + enemy.boundingBox.max.x > tile.bb.min.x + tile.bb.max.x) { // player comes from right
+								enemy.pos.x += overlapSize.x;
+								enemy.collidesLeft = true;
+							} else { // player comes from left
+								enemy.pos.x -= overlapSize.x;
+								enemy.collidesRight = true;
+							}
+						}
+					}
+					enemy.collides = true;
+					tile.onCollisionWithEnemy(enemy);
+					enemy.updateBoundingBox();
+					if (enemy.hp <= 0)
+						System.out.println("Enemy died");
+				}
 			}
 		}
 	}
@@ -194,18 +267,25 @@ public class Platformer extends JFrame {
 		g2d.drawImage(l.backgroundImage, 0, 0, this);
 		g2d.drawImage(bi, 0, 0, this);
 
-		for (int i = 0; i< l.tiles.size(); i++) {
-			l.tiles.get(i).draw(g2d,l.offsetX,0);
+		for (int i = 0; i < l.tiles.size(); i++) {
+			l.tiles.get(i).draw(g2d, l.offsetX, 0);
 		}
-		g2d.drawImage(getPlayer().getPlayerImage(), (int) (getPlayer().pos.x-l.offsetX), (int) getPlayer().pos.y, this);
+		g2d.drawImage(getPlayer().getPlayerImage(), (int) (getPlayer().pos.x - l.offsetX), (int) getPlayer().pos.y, this);
 
+		for (Enemy enemy : l.enemies) {
+			g2d.drawImage(enemy.getEnemyImage(), (int) (enemy.pos.x - l.offsetX), (int) enemy.pos.y, this);
+		}
+
+		for (Enemy enemy : l.enemies) {
+			bullets.addAll(enemy.bullets);
+		}
 
 		drawBullets(g2d);
 		drawHPMana(g2d);
 		drawSkills(g2d);
 		drawShield(g2d);
-
 	}
+
 
 	public void drawBullets(Graphics2D g2d){
 		for (Bullet bullet : bullets) {
@@ -293,12 +373,6 @@ public class Platformer extends JFrame {
 
 			if (keyCode == KeyEvent.VK_4) {
 				selectedItem = 3;
-			}
-
-			if (keyCode == KeyEvent.VK_UP) {
-			}
-
-			if (keyCode == KeyEvent.VK_DOWN) {
 			}
 
 			if (keyCode == KeyEvent.VK_LEFT) {

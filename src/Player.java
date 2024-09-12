@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
-public class Player{
+public class Player {
 	boolean jump = false, walkingLeft = false, walkingRight = false;
 	boolean collidesTop = false, collidesDown = false, collidesLeft = false, collidesRight = false, collides = false;
 
@@ -62,38 +62,17 @@ public class Player{
 		tilesWalk = new ArrayList<BufferedImage>();
 		tilesLife = new ArrayList<BufferedImage>();
 		try {
-			// Tiles for player's life on HUD
-			BufferedImage imageFull = ImageIO.read(new File(Platformer.BasePath + "HUD/hud_heartFull.png"));
-			tilesLife.add(imageFull);
-			BufferedImage imageHalf = ImageIO.read(new File(Platformer.BasePath + "HUD/hud_heartHalf.png"));
-			tilesLife.add(imageHalf);
-			BufferedImage imageEmpty = ImageIO.read(new File(Platformer.BasePath + "HUD/hud_heartEmpty.png"));
-			tilesLife.add(imageEmpty);
 			
 			// Tiles for movement animation
 			BufferedImage imageWalk;
-			imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk01.png"));
+			BufferedImage imageEmpty;
+			BufferedImage imageHalf;
+			imageWalk = ImageIO.read(new File("assets/ourAssets/walk/1.png"));
 			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk02.png"));
+			imageHalf = ImageIO.read(new File("assets/ourAssets/walk/2.png"));
 			tilesWalk.add(imageHalf);
-			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk03.png"));
+			imageEmpty = ImageIO.read(new File("assets/ourAssets/walk/З.png"));
 			tilesWalk.add(imageEmpty);
-			imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk04.png"));
-			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk05.png"));
-			tilesWalk.add(imageHalf);
-			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk06.png"));
-			tilesWalk.add(imageEmpty);
-			imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk07.png"));
-			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk08.png"));
-			tilesWalk.add(imageHalf);
-			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk09.png"));
-			tilesWalk.add(imageEmpty);
-			imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk10.png"));
-			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk11.png"));
-			tilesWalk.add(imageWalk);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -104,7 +83,7 @@ public class Player{
 
 	}
 
-	private void move(int deltaX) {
+	void move(int deltaX) {
 		if (deltaX < 0) {
 				pos.x = pos.x - movementSpeed / 4;
 		} else if (deltaX > 0) {
@@ -114,7 +93,7 @@ public class Player{
 
 	public void kill() {
 		if (hp > 0) {
-			hp--;
+			hp-=50;
 			pos.x = lastValidPosition.x;
 			pos.y = lastValidPosition.y;
 			posLastFrame.x = pos.x;
@@ -220,7 +199,7 @@ public class Player{
 	private BufferedImage getNextTile() {
 		if ((walkingLeft || walkingRight)) {
 			moveCounter++;
-			if(moveCounter>=3) {
+			if(moveCounter>=2) {
 				displayedAnimationState++;
 				moveCounter = 0;
 			}
@@ -229,7 +208,7 @@ public class Player{
 			}
 			return tilesWalk.get(displayedAnimationState);
 		}
-		return tilesWalk.get(7);
+		return tilesWalk.get(1);
 	}
 	
 	//public void playSound(String path) {
@@ -272,6 +251,12 @@ public class Player{
 			mana+=points;
 		}
 		this.playSound("assets/Sound/magic-chime-01 2.wav");
+	}
+	public void damage(int points){
+		hp -= points;
+		if (hp<0){
+			hp=0;
+		}
 	}
 
 

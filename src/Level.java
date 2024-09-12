@@ -12,11 +12,12 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 public class Level {
-	BufferedImage levelImg, resultingLevelImg, backgroundImage, cloudImage1;
+	BufferedImage levelImg, resultingLevelImg, backgroundImage, cloudImage1, mushroomImage;
 	public Player player = new Player(this);
 	Vec2 lvlSize;
 	float offsetX;
 	ArrayList<Tile> tiles;
+	ArrayList<Enemy> enemies = new ArrayList<>();
 
 	public Level(String levelMapPath, String levelBackgroundMapPath) throws IOException {
 		try {
@@ -31,10 +32,11 @@ public class Level {
 
 				// Cloud image
 				cloudImage1 = ImageIO.read(new File("./assets/Items/cloud1.png"));
+				mushroomImage = ImageIO.read(new File("assets/ourAssets/hellMushroom.png"));
 
 				// Tile images
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/liquidWaterTop_mid.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/grassMid.png")));
+				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img_2.png")));
+				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img.png")));
 				Tile.images.add(ImageIO.read(new File("./assets/Tiles/signRight.png")));
 				Tile.images.add(ImageIO.read(new File("./assets/Tiles/signExit.png")));
 				Tile.images.add(ImageIO.read(new File("./assets/Tiles/grassCliffRight.png")));
@@ -43,7 +45,7 @@ public class Level {
 				Tile.images.add(ImageIO.read(new File("./assets/Items/springboardDown.png")));
 				Tile.images.add(ImageIO.read(new File("./assets/Items/springboardUp.png")));
 				Healer healer = new Healer(this, 20);
-				Weapon weapon = new Gun(this, 30, 50);
+				Weapon weapon = new Gun(this, 30, 20);
 				ManaRecovery manaRecovery = new ManaRecovery(this, 20);
 				Shield shield1 = new Shield(this);
 				player.itemsList.add(weapon);
@@ -91,20 +93,20 @@ public class Level {
 		Graphics2D g2d = null;
 		g2d = (Graphics2D) resultingLevelImg.getGraphics();
 
-		for (int x = 0; x < resultingLevelImg.getWidth(null); x += backgroundImage.getWidth()) {
+//		for (int x = 0; x < resultingLevelImg.getWidth(null); x += backgroundImage.getWidth()) {
+//
+//			g2d.drawImage((BufferedImage) backgroundImage, null, x, 0);
+//
+//			AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+//			tx.translate(-backgroundImage.getWidth(null), 0);
+//			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+//			backgroundImage = op.filter(backgroundImage, null);
+//		}
 
-			g2d.drawImage((BufferedImage) backgroundImage, null, x, 0);
-
-			AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
-			tx.translate(-backgroundImage.getWidth(null), 0);
-			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			backgroundImage = op.filter(backgroundImage, null);
-		}
-
-		for (int x = 0; x < resultingLevelImg.getWidth(null); x += cloudImage1.getWidth() * 2) {
-			Random r = new Random();
-			g2d.drawImage((BufferedImage) cloudImage1, null, x + r.nextInt(250), r.nextInt(250) + 50);
-		}
+//		for (int x = 0; x < resultingLevelImg.getWidth(null); x += cloudImage1.getWidth() * 2) {
+//			Random r = new Random();
+//			g2d.drawImage((BufferedImage) cloudImage1, null, x + r.nextInt(250), r.nextInt(250) + 50);
+//		}
 
 		tiles.clear();
 
@@ -118,8 +120,20 @@ public class Level {
 
 				if (color.equals(Color.BLUE))
 					t = new TileWater(0,x*Tile.tileSize,y*Tile.tileSize);
-				if (color.equals(Color.BLACK))
-					t = new Tile(1,x*Tile.tileSize,y*Tile.tileSize);
+				if (color.equals(Color.BLACK)){
+					float xPosition = x*Tile.tileSize;
+					float yPosition = y*Tile.tileSize;
+					Random r = new Random();
+					double d = r.nextDouble();
+					if (d>0.2 && d<0.3){
+						Enemy enemy = new Enemy(this, (int) xPosition, (int) yPosition-70);
+						enemies.add(enemy);
+					}
+					if (r.nextDouble(1)<0.2){
+						g2d.drawImage(mushroomImage,null, (int) xPosition, (int) yPosition-70);
+					}
+					t = new Tile(1, xPosition, yPosition);
+				}
 				if (color.equals(Color.GREEN))
 					t = new Tile(2,x*Tile.tileSize,y*Tile.tileSize,false);
 				if (color.equals(Color.RED))

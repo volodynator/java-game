@@ -8,7 +8,7 @@ public class Healer extends Item{
     public Healer(Level level, int healPoints) throws IOException {
         this.healPoints = healPoints;
         this.level = level;
-        this.icon = ImageIO.read(new File("assets/Items/mushroomRed.png"));
+        this.icon = ImageIO.read(new File("assets/ourAssets/chickenLeg.png"));
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.io.IOException;
 public class Shield extends Item{
     public Shield(Level level) throws IOException {
         this.level = level;
-        this.icon = ImageIO.read(new File("assets/Items/star.png"));
+        this.icon = ImageIO.read(new File("assets/ourAssets/shield.png"));
     }
 
     @Override

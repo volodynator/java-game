@@ -9,14 +9,17 @@ public class Gun extends Weapon{
         this.level = level;
         this.mana = cost;
         this.damage = damage;
-        this.icon = ImageIO.read(new File("assets/Items/fireball.png"));
+        this.icon = ImageIO.read(new File("assets/ourAssets/blueBall.png"));
     }
 
     @Override
     public void use() throws IOException, NotEnoughManaExeption {
         if (level.player.mana-mana>0){
             level.player.mana-=mana;
-            Bullet blt = new Bullet((int) (level.player.pos.x - level.offsetX), (int) level.player.pos.y);
+            Bullet blt = new Bullet((int) (level.player.pos.x - level.offsetX) + 20, (int) level.player.pos.y + 10, damage);
+            if (level.player.facingLeft){
+                blt.movingLeft = true;
+            }
             level.player.bullets.add(blt);
             level.player.playSound("assets\\Sound\\gun-gunshot-01.wav");
         }
