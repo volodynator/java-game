@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 public class Player extends GameObject {
     private static final int gravity = 1;
@@ -18,6 +20,8 @@ public class Player extends GameObject {
     private int velx = 0, vely = 0;
 
     List<BufferedImage> images = new ArrayList<>();
+
+    Weapon weapon = new Gun(this);
     int curr = 0;
     public static final String path = ".\\assets\\Player\\";
 
@@ -54,6 +58,16 @@ public class Player extends GameObject {
             velx = 10;
         }
         updateAnimation();
+    }
+    public void playSound(String path){
+        File lol = new File(path);
+        try{
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(lol));
+            clip.start();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void jump() {

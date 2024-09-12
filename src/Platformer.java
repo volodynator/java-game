@@ -7,7 +7,13 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.*;
 
 import javax.swing.JFileChooser;
@@ -15,15 +21,15 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class Platformer extends JFrame{
+public class Platformer extends JFrame implements Runnable{
 	@Serial
 	private static final long serialVersionUID = 5736902251450559962L;
-	private Timer timer;
+
 	private Level l = null;
 	Player player;
 	BufferStrategy bufferStrategy;
 	private boolean running = false;
-	public List<Tile> levelObjects = new ArrayList<>();
+	public List<GameObject> gameObjects = new ArrayList<>();
 
 	public Platformer() {
 		//exit program when window is closed
@@ -87,6 +93,15 @@ public class Platformer extends JFrame{
 	private void updateGameStateAndRepaint() {
 		l.update();
 		checkCollision();
+		Iterator<Bullet> bulletIterator = bullets.iterator();
+		while (bulletIterator.hasNext()) {
+			Bullet bullet = bulletIterator.next();
+			bullet.update();
+
+			if (bullet.delete()) {
+				bulletIterator.remove();
+			}
+		}
 		int playerCenterX = player.x + player.getImage().getWidth() / 2;
 
 //		System.out.println("Player : "+player.x);
@@ -113,6 +128,10 @@ public class Platformer extends JFrame{
 				img_level.getSubimage((int) l.offsetX, 0, 1000, l.getHeight());
 		g2d.drawImage(visibleLevel, 0, 0, this);
 		g2d.drawImage(player.getImage(), player.x - (int) l.offsetX, player.y, this);
+
+		for (Bullet bullet: bullets) {
+			g2d.drawImage(bullet.image, bullet.x, bullet.y, this);
+		}
 	}
 
 
@@ -184,7 +203,17 @@ public class Platformer extends JFrame{
 			if (keyCode == KeyEvent.VK_SPACE) {
 				player.jump();
 			}
-
+			if (keyCode == KeyEvent.VK_DOWN) {
+				player.move(0, 3);
+			}
+			if (keyCode == KeyEvent.VK_E){
+				try {
+					bullets.add(player.weapon.use());
+					player.playSound("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Sound\\gun-gunshot-01.wav");
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
 	}
 
