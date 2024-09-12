@@ -14,13 +14,14 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class Platformer extends JFrame {
+public class Platformer extends JFrame implements Runnable{
 	@Serial
 	private static final long serialVersionUID = 5736902251450559962L;
 
 	private Level l = null;
 	Player player;
 	BufferStrategy bufferStrategy;
+	private boolean running = false;
 
 	public Platformer() {
 		//exit program when window is closed
@@ -55,10 +56,36 @@ public class Platformer extends JFrame {
 
 			this.setBounds(0, 0, 1000, 10 * 70);
 			this.setVisible(true);
+			startGame();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	private void startGame(){
+		running = true;
+		Thread game = new Thread(this);
+		game.start();
+	}
+	@Override
+	public void run() {
+		long lastTime = System.nanoTime();
+		final double nsPerTick = 1000000000.0 / 60.0; // 60 FPS
+
+		double delta = 0;
+		while (running) {
+			long now = System.nanoTime();
+			delta += (now - lastTime) / nsPerTick;
+			lastTime = now;
+
+			while (delta >= 1) {
+				updateGameStateAndRepaint();
+				delta--;
+			}
+		}
+		paint(getGraphics());
+	}
+
 
 	private void updateGameStateAndRepaint() {
 		l.update();
@@ -76,7 +103,7 @@ public class Platformer extends JFrame {
 		Graphics2D g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
 		try {
 			draw(g2);
-		} finally {
+		}finally {
 			g2.dispose();
 		}
 		bufferStrategy.show();
@@ -89,6 +116,7 @@ public class Platformer extends JFrame {
 		g2d.drawImage(visibleLevel, 0, 0, this);
 		g2d.drawImage(player.getImage(), player.x - (int) l.offsetX, player.y, this);
 	}
+
 
 	public class AL extends KeyAdapter {
 		Platformer p;
@@ -119,7 +147,6 @@ public class Platformer extends JFrame {
 			if (keyCode == KeyEvent.VK_DOWN) {
 				player.move(0, 3);
 			}
-			updateGameStateAndRepaint();
 		}
 	}
 
