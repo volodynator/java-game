@@ -15,6 +15,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.JFileChooser;
@@ -35,6 +36,9 @@ public class Platformer extends JFrame {
 	java.util.List<Bullet> bulletsToRemove = new CopyOnWriteArrayList<>();
 	java.util.List<Explosion> explosions = new CopyOnWriteArrayList<>();
 
+	BufferedImage frameNotSelected = ImageIO.read(new File("assets/ourAssets/frames/frameNotSelected.png"));
+	BufferedImage frameSelected = ImageIO.read(new File("assets/ourAssets/frames/frameSelected.png"));
+
 
 	private int selectedItem = 0;
 
@@ -48,7 +52,7 @@ public class Platformer extends JFrame {
 	//TODO draw tiles
 	//TODO kill monsters
 
-	public Platformer() {
+	public Platformer() throws IOException {
 		//exit program when window is closed
 		this.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
@@ -326,16 +330,16 @@ public class Platformer extends JFrame {
 		}
 	}
 	public void drawSkills(Graphics2D g2d){
-		g2d.setColor(Color.RED);
 		int space = 0;
 		for (int i = 0; i < 4; i++) {
 			if (i == selectedItem) {
-				g2d.setColor(Color.GREEN);
+				g2d.drawImage(frameSelected, 650+space, 50, this);
 			}
-			g2d.drawRoundRect(650 + space, 50, 50, 50, 4, 4);
-			g2d.drawImage(getPlayer().itemsList.get(i).icon, 650 + space, 50, 50, 50, this);
+			else {
+				g2d.drawImage(frameNotSelected, 650+space, 50, this);
+			}
+			g2d.drawImage(getPlayer().itemsList.get(i).icon, 650 + space, 50, 70, 70, this);
 			space += 70;
-			g2d.setColor(Color.RED);
 		}
 	}
 	public void drawShield(Graphics2D g2d){
