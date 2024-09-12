@@ -16,8 +16,9 @@ public class Gun extends Weapon{
     public void use() throws IOException, NotEnoughManaExeption {
         if (player.mana-mana>0){
             player.mana-=mana;
-            player.bullets.add(new Bullet(player.x + 2, player.y + 2));
-            player.playSound("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Sound\\gun-gunshot-01.wav");
+            Bullet blt = new Bullet(player.boundingBox.getCenterX(), player.boundingBox.getCenterY());
+            player.bullets.add(blt);
+            player.playSound(".\\assets\\Sound\\gun-gunshot-01.wav");
         }
         else {
             throw new NotEnoughManaExeption();
