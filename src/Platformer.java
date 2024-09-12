@@ -12,8 +12,6 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.*;
 
 import javax.swing.JFileChooser;
@@ -21,15 +19,14 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class Platformer extends JFrame implements Runnable{
+public class Platformer extends JFrame{
 	@Serial
 	private static final long serialVersionUID = 5736902251450559962L;
-
+	Timer timer;
 	private Level l = null;
 	Player player;
 	BufferStrategy bufferStrategy;
-	private boolean running = false;
-	public List<GameObject> gameObjects = new ArrayList<>();
+	public List<Tile> levelObjects = new ArrayList<>();
 
 	public Platformer() {
 		//exit program when window is closed
@@ -203,13 +200,11 @@ public class Platformer extends JFrame implements Runnable{
 			if (keyCode == KeyEvent.VK_SPACE) {
 				player.jump();
 			}
-			if (keyCode == KeyEvent.VK_DOWN) {
-				player.move(0, 3);
-			}
+
 			if (keyCode == KeyEvent.VK_E){
 				try {
 					bullets.add(player.weapon.use());
-					player.playSound("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Sound\\gun-gunshot-01.wav");
+					player.playSound(".\\assets\\Sound\\gun-gunshot-01.wav");
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
