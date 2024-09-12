@@ -14,13 +14,14 @@ public class Player {
     int speedY;
     List<BufferedImage> images = new ArrayList<>();
     int curr = 0;
+    public static final String path = "D:\\DasStudium\\Sem2\\ProgrammierPraktikum\\java-game\\assets\\Player\\";
 
     public Player() throws IOException {
         for(int i = 1; i<10; i++){
-            images.add(ImageIO.read(new File("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Player\\p1_walk\\PNG\\p1_walk0"+i+".png")));
+            images.add(ImageIO.read(new File( path +"p1_walk\\PNG\\p1_walk0"+i+".png")));
         }
-        images.add(ImageIO.read(new File("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Player\\p1_walk\\PNG\\p1_walk10.png")));
-        images.add(ImageIO.read(new File("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Player\\p1_walk\\PNG\\p1_walk11.png")));
+        images.add(ImageIO.read(new File(path +"p1_walk\\PNG\\p1_walk10.png")));
+        images.add(ImageIO.read(new File(path +"p1_walk\\PNG\\p1_walk11.png")));
     }
     public BufferedImage getImage(){
         return images.get(curr);

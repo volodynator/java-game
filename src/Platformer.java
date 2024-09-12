@@ -102,23 +102,15 @@ public class Platformer extends JFrame {
 		public void keyPressed(KeyEvent event) {
 			int keyCode = event.getKeyCode();
 
-			if (keyCode == KeyEvent.VK_ESCAPE) {
-				dispose();
+			switch (keyCode) {
+				case KeyEvent.VK_UP: player.move(0, -3); break;
+				case KeyEvent.VK_DOWN: player.move(0, 3);break;
+				case KeyEvent.VK_LEFT: player.move(-3, 0);break;
+				case KeyEvent.VK_RIGHT: player.move(3, 0);break;
+				case KeyEvent.VK_ESCAPE: dispose(); break;
+
 			}
 
-			if (keyCode == KeyEvent.VK_LEFT) {
-				player.move(-3, 0);
-			}
-
-			if (keyCode == KeyEvent.VK_RIGHT) {
-				player.move(3, 0);
-			}
-			if (keyCode == KeyEvent.VK_UP) {
-				player.move(0, -3);
-			}
-			if (keyCode == KeyEvent.VK_DOWN) {
-				player.move(0, 3);
-			}
 			updateGameStateAndRepaint();
 		}
 	}
