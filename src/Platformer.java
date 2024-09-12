@@ -8,9 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +26,7 @@ public class Platformer extends JFrame{
 	Player player;
 	BufferStrategy bufferStrategy;
 	private boolean running = false;
-	
+
 
 	private List<Bullet> bullets = new ArrayList<>();
 	private boolean notEnoughMana = false;
@@ -91,9 +89,9 @@ public class Platformer extends JFrame{
 				player.update();
 				checkCollision();
 				updateGameStateAndRepaint();
-				delta--;
+
 			}
-		}, 0, 10); // Schedule the task to run every 10 ms
+		}, 0, 10);
         paint(getGraphics());
 	}
 
@@ -209,7 +207,7 @@ public class Platformer extends JFrame{
 	}
 	@Override
 	public void dispose() {
-		// Stop the timer when the window is closed
+
 		if (timer != null) {
 			timer.cancel();
 		}

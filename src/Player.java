@@ -126,5 +126,43 @@ public class Player extends GameObject {
         this.playSound("assets/Sound/magic-chime-01 2.wav");
     }
 
+    public void update() {
+        // Apply gravity only if the player is in the air
+        if (inAir) {
+            vely += gravity;
+
+            // Limit fall speed
+            if (vely > maxFallSpeed) {
+                vely = maxFallSpeed;
+            }
+        } else {
+            vely = 0;  // Stop vertical movement when on the ground
+        }
+
+        // Update horizontal and vertical positions
+        x += velx;
+        y += vely;
+
+        // Handle horizontal deceleration (friction)
+        if (velx != 0 && !inAir) {
+            velx *= 0.9;  // Apply friction to horizontal movement when on the ground
+            if (Math.abs(velx) < 1) {
+                velx = 0;  // Stop movement if velocity is low
+            }
+        }
+
+        // Ensure player is in the air only if they are not on solid ground
+        if (!inAir) {
+            velx *= 0.85f;  // Air resistance when the player is in the air
+        }
+
+        // Update bounding box for collision detection
+        this.boundingBox.min.x = x;
+        this.boundingBox.min.y = y;
+        this.boundingBox.max.x = x + width;
+        this.boundingBox.max.y = y + height;
+    }
+
+
 
 }
