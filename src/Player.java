@@ -63,36 +63,36 @@ public class Player{
 		tilesLife = new ArrayList<BufferedImage>();
 		try {
 			// Tiles for player's life on HUD
-			BufferedImage imageFull = ImageIO.read(new File(Platformer.BasePath + "HUD/hud_heartFull.png"));
+			BufferedImage imageFull = ImageIO.read(new File(Platformer.BasePath + "/HUD/hud_heartFull.png"));
 			tilesLife.add(imageFull);
-			BufferedImage imageHalf = ImageIO.read(new File(Platformer.BasePath + "HUD/hud_heartHalf.png"));
+			BufferedImage imageHalf = ImageIO.read(new File(Platformer.BasePath + "/HUD/hud_heartHalf.png"));
 			tilesLife.add(imageHalf);
-			BufferedImage imageEmpty = ImageIO.read(new File(Platformer.BasePath + "HUD/hud_heartEmpty.png"));
+			BufferedImage imageEmpty = ImageIO.read(new File(Platformer.BasePath + "/HUD/hud_heartEmpty.png"));
 			tilesLife.add(imageEmpty);
 			
 			// Tiles for movement animation
 			BufferedImage imageWalk;
-			imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk01.png"));
+			imageWalk = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk01.png"));
 			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk02.png"));
+			imageHalf = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk02.png"));
 			tilesWalk.add(imageHalf);
-			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk03.png"));
+			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk03.png"));
 			tilesWalk.add(imageEmpty);
-			imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk04.png"));
+			imageWalk = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk04.png"));
 			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk05.png"));
+			imageHalf = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk05.png"));
 			tilesWalk.add(imageHalf);
-			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk06.png"));
+			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk06.png"));
 			tilesWalk.add(imageEmpty);
-			imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk07.png"));
+			imageWalk = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk07.png"));
 			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk08.png"));
+			imageHalf = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk08.png"));
 			tilesWalk.add(imageHalf);
-			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk09.png"));
+			imageEmpty = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk09.png"));
 			tilesWalk.add(imageEmpty);
-			imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk10.png"));
+			imageWalk = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk10.png"));
 			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk11.png"));
+			imageHalf = ImageIO.read(new File(Platformer.BasePath + "/Player/p1_walk/PNG/p1_walk11.png"));
 			tilesWalk.add(imageWalk);
 			
 		} catch (IOException e) {
@@ -147,7 +147,7 @@ public class Player{
 
 		if(jump && collidesDown){
 			pos.y -= jumpPower;
-			playSound(Platformer.BasePath + "Sound/jump2.wav");
+			playSound(Platformer.BasePath + "/Sound/jump2.wav");
 		}
 
 		// Save old position
@@ -262,7 +262,7 @@ public class Player{
 		else {
 			hp+=points;
 		}
-		this.playSound("assets/Sound/burp-1.wav");
+		this.playSound("./assets/Sound/burp-1.wav");
 	}
 	public void manaRegeneration(int points){
 		if (mana+points>100){
@@ -271,7 +271,7 @@ public class Player{
 		else {
 			mana+=points;
 		}
-		this.playSound("assets/Sound/magic-chime-01 2.wav");
+		this.playSound("./assets/Sound/magic-chime-01 2.wav");
 	}
 
 

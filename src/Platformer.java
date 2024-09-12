@@ -22,7 +22,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Platformer extends JFrame {
-	public static final String BasePath = "./assets/";
+	public static final String BasePath = "./assets";
 	@Serial
 	private static final long serialVersionUID = 5736902251450559962L;
 
@@ -67,7 +67,7 @@ public class Platformer extends JFrame {
 		}
 
 		try {
-			l = new Level(selectedFile.getAbsolutePath(), BasePath + "background0.png");
+			l = new Level(selectedFile.getAbsolutePath(), BasePath + "/usedAssets/background0.png");
 			p = l.player;
 
 			this.setBounds(0, 0, 1000, 12 * 70);
@@ -81,7 +81,7 @@ public class Platformer extends JFrame {
 				}
 
 			}, 0, 10);
-			playSound(BasePath + "Sound/soundtrack.wav");
+			playSound(BasePath + "/Sound/soundtrack.wav");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -321,7 +321,7 @@ public class Platformer extends JFrame {
 					bullets.addAll(player.bullets);
 				} catch (IOException | NotEnoughManaExeption e) {
 					notEnoughMana = true;
-					player.playSound("assets/Sound/button-18.wav");
+					player.playSound("./assets/Sound/button-18.wav");
 				}
 			}
 			if (keyCode == KeyEvent.VK_R) {
