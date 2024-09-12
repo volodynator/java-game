@@ -12,16 +12,20 @@ public class Player extends GameObject {
     private static final int jumpStrength = 20;
     private static final int maxFallSpeed = 15;
     private static final float airResistance = 0.85f;
-
     public boolean inAir = false;
     public boolean wantsToJump = false;
-
+    int hp = 20;
+    int mana = 100;
+    List<Bullet> bullets = new ArrayList<>();
     private int startPosX, startPosY;
     private int velx = 0, vely = 0;
 
     List<BufferedImage> images = new ArrayList<>();
 
-    Weapon weapon = new Gun(this);
+    List<Item> itemsList = new ArrayList<>();
+    Shield shield = null;
+
+    Weapon weapon = new Gun(this, 30, 50);
     int curr = 0;
     public static final String path = ".\\assets\\Player\\";
 
@@ -34,6 +38,14 @@ public class Player extends GameObject {
 
         for (int i = 1; i < 10; i++) {
             images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk0" + i + ".png")));
+        Healer healer = new Healer(this, 20);
+        ManaRecovery manaRecovery = new ManaRecovery(this, 20);
+        itemsList.add(weapon);
+        itemsList.add(healer);
+        itemsList.add(manaRecovery);
+        itemsList.add(weapon);
+        for(int i = 1; i<10; i++){
+            images.add(ImageIO.read(new File( path +"p1_walk\\PNG\\p1_walk0"+i+".png")));
         }
         images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk10.png")));
         images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk11.png")));
@@ -84,6 +96,32 @@ public class Player extends GameObject {
         vely = 0;
         inAir = false;
     }
+    public void heal(int points){
+        if (hp+points>100){
+            hp = 100;
+        }
+        else {
+            hp+=points;
+        }
+        this.playSound("assets/Sound/burp-1.wav");
+    }
+
+    public void damage(){
+        if (hp>0){
+            this.hp--;
+        }
+    }
+
+    public void manaRegeneration(int points){
+        if (mana+points>100){
+            mana=100;
+        }
+        else {
+            mana+=points;
+        }
+        this.playSound("assets/Sound/magic-chime-01 2.wav");
+    }
+
 
     public void update() {
 

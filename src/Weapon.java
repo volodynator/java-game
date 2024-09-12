@@ -1,5 +1,8 @@
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public interface Weapon {
-    public Bullet use() throws IOException;
+public abstract class Weapon extends Item{
+    int mana;
+    int damage;
+
 }

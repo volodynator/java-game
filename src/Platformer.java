@@ -1,5 +1,4 @@
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -12,8 +11,10 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
@@ -26,6 +27,13 @@ public class Platformer extends JFrame{
 	private Level l = null;
 	Player player;
 	BufferStrategy bufferStrategy;
+	private boolean running = false;
+	
+
+	private List<Bullet> bullets = new ArrayList<>();
+	private boolean notEnoughMana = false;
+
+	private int selectedItem = 0;
 	public List<Tile> levelObjects = new ArrayList<>();
 
 	public Platformer() {
@@ -56,9 +64,11 @@ public class Platformer extends JFrame{
 		try {
 			l = new Level(selectedFile.getAbsolutePath());
 			player = new Player();
+			player.playSound(".\\assets\\Sound\\soundtrack.wav");
 			createBufferStrategy(2);
 			bufferStrategy = this.getBufferStrategy();
 
+			this.getGraphics().setColor(Color.RED);
 			this.setBounds(0, 0, 1000, 10 * 70);
 			this.setVisible(true);
 
@@ -81,15 +91,15 @@ public class Platformer extends JFrame{
 				player.update();
 				checkCollision();
 				updateGameStateAndRepaint();
-
+				delta--;
 			}
 		}, 0, 10); // Schedule the task to run every 10 ms
+        paint(getGraphics());
 	}
 
 
 	private void updateGameStateAndRepaint() {
 		l.update();
-		checkCollision();
 		Iterator<Bullet> bulletIterator = bullets.iterator();
 		while (bulletIterator.hasNext()) {
 			Bullet bullet = bulletIterator.next();
@@ -112,23 +122,57 @@ public class Platformer extends JFrame{
 	public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
 		try {
-			draw(g2);
+			try {
+				draw(g2);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}finally {
 			g2.dispose();
 		}
 		bufferStrategy.show();
 	}
 
-	private void draw(Graphics2D g2d) {
+	private void draw(Graphics2D g2d) throws IOException {
 		BufferedImage img_level = (BufferedImage) l.getResultingImage();
 		BufferedImage visibleLevel =
 				img_level.getSubimage((int) l.offsetX, 0, 1000, l.getHeight());
 		g2d.drawImage(visibleLevel, 0, 0, this);
 		g2d.drawImage(player.getImage(), player.x - (int) l.offsetX, player.y, this);
 
+		// bullets
 		for (Bullet bullet: bullets) {
 			g2d.drawImage(bullet.image, bullet.x, bullet.y, this);
 		}
+		// hp
+		g2d.setColor(Color.RED);
+		g2d.drawRoundRect(50, 50, 300, 20, 4, 4);
+		g2d.fillRoundRect(50, 50, player.hp*3, 20, 4, 4);
+
+		// mana
+		g2d.setColor(Color.BLUE);
+		g2d.drawRoundRect(50, 90, 300, 20, 4, 4);
+		g2d.fillRoundRect(50, 90, player.mana*3, 20, 4, 4);
+		if (notEnoughMana){
+			g2d.setColor(Color.RED);
+			g2d.fillRoundRect(50, 90, player.mana*3, 20, 4, 4);
+			notEnoughMana=false;
+		}
+		// skills
+		g2d.setColor(Color.RED);
+		int space = 0;
+		for (int i = 0; i<4; i++) {
+			if (i==selectedItem){
+				g2d.setColor(Color.GREEN);
+			}
+			g2d.drawRoundRect(650+space, 50, 50, 50, 4, 4);
+			g2d.drawImage(player.itemsList.get(i).icon, 650+space, 50, 50, 50, this);
+			space+=70;
+			g2d.setColor(Color.RED);
+		}
+		// shield
+		if (player.shield!=null){
+			}
 	}
 
 
@@ -203,11 +247,25 @@ public class Platformer extends JFrame{
 
 			if (keyCode == KeyEvent.VK_E){
 				try {
-					bullets.add(player.weapon.use());
-					player.playSound(".\\assets\\Sound\\gun-gunshot-01.wav");
-				} catch (IOException e) {
-					throw new RuntimeException(e);
+					System.out.println("Mana: "+player.mana);
+					player.itemsList.get(selectedItem).use();
+					bullets.addAll(player.bullets);
+				} catch (IOException | NotEnoughManaExeption e) {
+					notEnoughMana = true;
+					player.playSound("assets/Sound/button-18.wav");
 				}
+            }
+			if (keyCode == KeyEvent.VK_1) {
+				selectedItem=0;
+			}
+			if (keyCode == KeyEvent.VK_2) {
+				selectedItem=1;
+			}
+			if (keyCode == KeyEvent.VK_3) {
+				selectedItem=2;
+			}
+			if (keyCode == KeyEvent.VK_4) {
+				selectedItem=3;
 			}
 		}
 	}
