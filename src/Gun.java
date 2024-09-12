@@ -16,7 +16,7 @@ public class Gun extends Weapon{
     public void use() throws IOException, NotEnoughManaExeption {
         if (level.player.mana-mana>0){
             level.player.mana-=mana;
-            Bullet blt = new Bullet((int) (level.player.pos.x - level.offsetX) + 20, (int) level.player.pos.y + 10, damage);
+            Bullet blt = new Bullet((int) (level.player.pos.x - level.offsetX) + 70, (int) level.player.pos.y + 10, damage);
             if (level.player.facingLeft){
                 blt.movingLeft = true;
             }

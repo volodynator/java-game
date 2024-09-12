@@ -126,7 +126,6 @@ public class Player {
 
 		if(jump && collidesDown){
 			pos.y -= jumpPower;
-			playSound(Platformer.BasePath + "Sound/jump2.wav");
 		}
 
 		// Save old position

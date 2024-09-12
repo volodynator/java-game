@@ -113,22 +113,12 @@ public class Enemy {
 
     }
 
-    public void update() throws IOException, NotEnoughManaExeption {
-
-        Iterator<Bullet> bulletIterator = bullets.iterator();
-        while (bulletIterator.hasNext()) {
-            Bullet bullet = bulletIterator.next();
-            bullet.update();
-
-            if (bullet.delete()) {
-                bulletIterator.remove();
-            }
-        }
+    public void update() throws IOException{
 
         Random random = new Random();
         double r = random.nextDouble(40);
         int distance = (int) (pos.x - l.player.pos.x);
-        if (distance<500 && r<0.05){
+        if (distance<500 && r<0.15){
             EnemyGun gun =new EnemyGun(this, l, 10);
             gun.shoot();
         }
@@ -141,7 +131,15 @@ public class Enemy {
         if (r>0.2 && r<0.23){
             jump=true;
         }
+        Iterator<Bullet> bulletIterator = bullets.iterator();
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+            bullet.update();
 
+            if (bullet.delete()) {
+                bulletIterator.remove();
+            }
+        }
         // Check if walking and call move()
         if (walkingLeft){
             move(-1);

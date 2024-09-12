@@ -118,9 +118,10 @@ public class Level {
 
 				// Compare color of pixels in order to select the corresponding tiles
 
-				if (color.equals(Color.RED))
+				if (color.equals(Color.BLUE))
 					t = new TileWater(0,x*Tile.tileSize,y*Tile.tileSize);
 				if (color.equals(Color.BLACK)){
+
 					float xPosition = x*Tile.tileSize;
 					float yPosition = y*Tile.tileSize;
 					Random r = new Random();

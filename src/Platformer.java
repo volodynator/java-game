@@ -33,6 +33,7 @@ public class Platformer extends JFrame {
 	BufferStrategy bufferStrategy;
 	java.util.List<Bullet> bullets = new CopyOnWriteArrayList<>();
 	java.util.List<Bullet> bulletsToRemove = new CopyOnWriteArrayList<>();
+	java.util.List<Explosion> explosions = new CopyOnWriteArrayList<>();
 
 
 	private int selectedItem = 0;
@@ -79,7 +80,8 @@ public class Platformer extends JFrame {
 			l = new Level(selectedFile.getAbsolutePath(), "assets/ourAssets/redBackground.jpg");
 			p = l.player;
 
-			this.setBounds(0, 0, 1000, 12 * 70);
+
+			this.setBounds(0, 0, 1000, 20 * 70);
 			this.setVisible(true);
 			gameStateUpdateTrigger = new Timer();
 			gameStateUpdateTrigger.scheduleAtFixedRate(new TimerTask() {
@@ -120,6 +122,12 @@ public class Platformer extends JFrame {
 		}
 		checkCollision();
 		checkEnemiesCollision();
+		for (Explosion explosion : explosions) {
+			explosion.update();
+			if (explosion.isFinished()) {
+				explosions.remove(explosion);
+			}
+		}
 		bullets.removeAll(bulletsToRemove);
 		bulletsToRemove.clear();
 		repaint();
@@ -141,10 +149,11 @@ public class Platformer extends JFrame {
 				Bullet bullet = bulletIterator.next();
 				bullet.update();
 
-				if (p.boundingBox.intersect(bullet.boundingBox)) {
+				if (p.boundingBox.intersect(bullet.boundingBox) && !bullet.hasCollided) {
 					System.out.println("Collision");
+					explosions.add(new Explosion(bullet.x, bullet.y, l));
 					p.damage(bullet.damage);
-
+					bullet.hasCollided=true;
 					bulletsToRemove.add(bullet);
 				}
 			}
@@ -283,6 +292,9 @@ public class Platformer extends JFrame {
 
 		for (Enemy enemy : l.enemies) {
 			bullets.addAll(enemy.bullets);
+		}
+		for (Explosion explosion : explosions) {
+			explosion.draw(g2d);
 		}
 
 		drawBullets(g2d);

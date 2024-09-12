@@ -12,6 +12,7 @@ public class Bullet {
     boolean movingLeft;
     BoundingBox boundingBox;
     int damage;
+    boolean hasCollided = false;
 
     BufferedImage image = ImageIO.read(new File("assets/ourAssets/blueBall.png"));
 
@@ -21,7 +22,7 @@ public class Bullet {
         this.x = startX;
         this.y = startY;
         this.damage = damage;
-        boundingBox = new BoundingBox(x, y, x, y);
+        boundingBox = new BoundingBox(x, y, x+70, y+70);
     }
     public void update(){
         if (movingLeft){
@@ -39,7 +40,7 @@ public class Bullet {
         boundingBox.min.x = x;
         boundingBox.min.y = y;
 
-        boundingBox.max.x = x;
-        boundingBox.max.y = y;
+        boundingBox.max.x = x+70;
+        boundingBox.max.y = y+70;
     }
 }
