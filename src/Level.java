@@ -35,15 +35,15 @@ public class Level {
 				mushroomImage = ImageIO.read(new File("assets/ourAssets/hellMushroom.png"));
 
 				// Tile images
-				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img_2.png")));
-				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/signRight.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/signExit.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/grassCliffRight.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/grassCliffLeft.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Items/coinGold.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Items/springboardDown.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Items/springboardUp.png")));
+				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img_2.png"))); //lava
+				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img.png"))); //grass
+
+				//TODO draw gold and dirt
+				Tile.images.add(ImageIO.read(new File("assets/ourAssets/gold.png"))); //gold
+				Tile.images.add(ImageIO.read(new File("assets/ourAssets/dirt.png"))); //dirt
+
+
+
 				Healer healer = new Healer(this, 20);
 				Weapon weapon = new Gun(this, 30, 20);
 				ManaRecovery manaRecovery = new ManaRecovery(this, 20);
@@ -118,7 +118,7 @@ public class Level {
 
 				// Compare color of pixels in order to select the corresponding tiles
 
-				if (color.equals(Color.BLUE))
+				if (color.equals(Color.RED))
 					t = new TileWater(0,x*Tile.tileSize,y*Tile.tileSize);
 				if (color.equals(Color.BLACK)){
 					float xPosition = x*Tile.tileSize;
@@ -134,18 +134,11 @@ public class Level {
 					}
 					t = new Tile(1, xPosition, yPosition);
 				}
-				if (color.equals(Color.GREEN))
-					t = new Tile(2,x*Tile.tileSize,y*Tile.tileSize,false);
-				if (color.equals(Color.RED))
-					t = new Tile(3,x*Tile.tileSize,y*Tile.tileSize,false	);
 				if (color.equals(Color.YELLOW))
-					t = new Tile(4,x*Tile.tileSize,y*Tile.tileSize);
-				if (color.equals(Color.GRAY))
-					t = new Tile(5,x*Tile.tileSize,y*Tile.tileSize);
+					t = new Tile(2,x*Tile.tileSize,y*Tile.tileSize,false);
 				if (color.equals(Color.ORANGE))
-					t = new TileCoin(6,x*Tile.tileSize,y*Tile.tileSize);
-				if (color.equals(Color.CYAN))
-					t = new TileSpringBoard(7,x*Tile.tileSize,y*Tile.tileSize);
+					t = new Tile(3,x*Tile.tileSize,y*Tile.tileSize,false	);
+
 
 				if(t!=null) {
 					tiles.add(t);

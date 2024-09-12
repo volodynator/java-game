@@ -42,6 +42,11 @@ public class Platformer extends JFrame {
 	Timer gameStateUpdateTrigger;
 	boolean notEnoughMana = false;
 
+
+	//TODO despawn monsters after respawn
+	//TODO draw tiles
+	//TODO kill monsters
+
 	public Platformer() {
 		//exit program when window is closed
 		this.addWindowListener(new WindowAdapter(){
