@@ -7,7 +7,11 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -22,6 +26,8 @@ public class Platformer extends JFrame implements Runnable{
 	Player player;
 	BufferStrategy bufferStrategy;
 	private boolean running = false;
+
+	private List<Bullet> bullets = new ArrayList<>();
 
 	public Platformer() {
 		//exit program when window is closed
@@ -51,6 +57,7 @@ public class Platformer extends JFrame implements Runnable{
 		try {
 			l = new Level(selectedFile.getAbsolutePath());
 			player = new Player();
+			player.playSound("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Sound\\soundtrack.wav");
 			createBufferStrategy(2);
 			bufferStrategy = this.getBufferStrategy();
 
@@ -89,9 +96,16 @@ public class Platformer extends JFrame implements Runnable{
 
 	private void updateGameStateAndRepaint() {
 		l.update();
+		Iterator<Bullet> bulletIterator = bullets.iterator();
+		while (bulletIterator.hasNext()) {
+			Bullet bullet = bulletIterator.next();
+			bullet.update();
+
+			if (bullet.delete()) {
+				bulletIterator.remove();
+			}
+		}
 		int playerCenterX = player.x + player.getImage().getWidth() / 2;
-		System.out.println("Off: "+l.offsetX);
-		System.out.println("Player : "+player.x);
 		int maxOffsetX = l.getResultingImage().getWidth(null) - this.getWidth();
 
 		l.offsetX = Math.max(0, Math.min(playerCenterX - this.getWidth() / 2, maxOffsetX));
@@ -115,6 +129,10 @@ public class Platformer extends JFrame implements Runnable{
 				img_level.getSubimage((int) l.offsetX, 0, 1000, l.getHeight());
 		g2d.drawImage(visibleLevel, 0, 0, this);
 		g2d.drawImage(player.getImage(), player.x - (int) l.offsetX, player.y, this);
+
+		for (Bullet bullet: bullets) {
+			g2d.drawImage(bullet.image, bullet.x, bullet.y, this);
+		}
 	}
 
 
@@ -146,6 +164,14 @@ public class Platformer extends JFrame implements Runnable{
 			}
 			if (keyCode == KeyEvent.VK_DOWN) {
 				player.move(0, 3);
+			}
+			if (keyCode == KeyEvent.VK_E){
+				try {
+					bullets.add(player.weapon.use());
+					player.playSound("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Sound\\gun-gunshot-01.wav");
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 	}
