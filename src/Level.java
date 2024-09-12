@@ -29,19 +29,15 @@ public class Level {
 				// Level image
 				levelImg = ImageIO.read(new File(levelMapPath));
 
-				// Cloud image
-				cloudImage1 = ImageIO.read(new File("./assets/Items/cloud1.png"));
+//				// Cloud image
+//				cloudImage1 = ImageIO.read(new File(".\\assets\\usedAssets\\cloud1.png"));
 
 				// Tile images
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/liquidWaterTop_mid.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/grassMid.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/signRight.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/signExit.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/grassCliffRight.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Tiles/grassCliffLeft.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Items/coinGold.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Items/springboardDown.png")));
-				Tile.images.add(ImageIO.read(new File("./assets/Items/springboardUp.png")));
+				Tile.images.add(ImageIO.read(new File(".\\assets\\usedAssets\\dirt.png")));
+				Tile.images.add(ImageIO.read(new File(".\\assets\\usedAssets\\gold.png")));
+				Tile.images.add(ImageIO.read(new File(".\\assets\\usedAssets\\grass.png")));
+				Tile.images.add(ImageIO.read(new File(".\\assets\\usedAssets\\lava.png")));
+
 				Healer healer = new Healer(this, 20);
 				Weapon weapon = new Gun(this, 30, 50);
 				ManaRecovery manaRecovery = new ManaRecovery(this, 20);
@@ -100,11 +96,11 @@ public class Level {
 			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 			backgroundImage = op.filter(backgroundImage, null);
 		}
-
-		for (int x = 0; x < resultingLevelImg.getWidth(null); x += cloudImage1.getWidth() * 2) {
-			Random r = new Random();
-			g2d.drawImage((BufferedImage) cloudImage1, null, x + r.nextInt(250), r.nextInt(250) + 50);
-		}
+//clouds not needed
+//		for (int x = 0; x < resultingLevelImg.getWidth(null); x += cloudImage1.getWidth() * 2) {
+//			Random r = new Random();
+//			g2d.drawImage((BufferedImage) cloudImage1, null, x + r.nextInt(250), r.nextInt(250) + 50);
+//		}
 
 		tiles.clear();
 
@@ -116,22 +112,15 @@ public class Level {
 
 				// Compare color of pixels in order to select the corresponding tiles
 
-				if (color.equals(Color.BLUE))
+				if (color.equals(Color.ORANGE))
 					t = new TileWater(0,x*Tile.tileSize,y*Tile.tileSize);
-				if (color.equals(Color.BLACK))
+				if (color.equals(Color.YELLOW))
 					t = new Tile(1,x*Tile.tileSize,y*Tile.tileSize);
-				if (color.equals(Color.GREEN))
+				if (color.equals(Color.BLACK))
 					t = new Tile(2,x*Tile.tileSize,y*Tile.tileSize,false);
 				if (color.equals(Color.RED))
 					t = new Tile(3,x*Tile.tileSize,y*Tile.tileSize,false	);
-				if (color.equals(Color.YELLOW))
-					t = new Tile(4,x*Tile.tileSize,y*Tile.tileSize);
-				if (color.equals(Color.GRAY))
-					t = new Tile(5,x*Tile.tileSize,y*Tile.tileSize);
-				if (color.equals(Color.ORANGE))
-					t = new TileCoin(6,x*Tile.tileSize,y*Tile.tileSize);
-				if (color.equals(Color.CYAN))
-					t = new TileSpringBoard(7,x*Tile.tileSize,y*Tile.tileSize);
+
 
 				if(t!=null) {
 					tiles.add(t);
