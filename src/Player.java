@@ -34,28 +34,27 @@ public class Player extends GameObject {
     public Player() throws IOException {
         this.x = 10;
         this.y = 10;
+        Healer healer = new Healer(this, 20);
+        ManaRecovery manaRecovery = new ManaRecovery(this, 20);
+        Shield shield1 = new Shield(this);
+        itemsList.add(weapon);
+        itemsList.add(healer);
+        itemsList.add(manaRecovery);
+        itemsList.add(shield1);
+        for(int i = 1; i<10; i++){
+            images.add(ImageIO.read(new File( path +"p1_walk\\PNG\\p1_walk0"+i+".png")));
+        }
+        images.add(ImageIO.read(new File(path +"p1_walk\\PNG\\p1_walk10.png")));
+        images.add(ImageIO.read(new File(path +"p1_walk\\PNG\\p1_walk11.png")));
+        this.width = images.get(0).getWidth();
+        this.height = images.get(0).getHeight();
+        this.boundingBox = new BoundingBox(new Vec2(x,y), new Vec2(x + width,y - height));
         this.startPosX = this.x;  // Save initial position for restarts
         this.startPosY = this.y;
 
-
-        for (int i = 1; i < 10; i++) {
-            images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk0" + i + ".png")));
-            Healer healer = new Healer(this, 20);
-            ManaRecovery manaRecovery = new ManaRecovery(this, 20);
-            itemsList.add(weapon);
-            itemsList.add(healer);
-            itemsList.add(manaRecovery);
-            itemsList.add(weapon);
-            for (int j = 1; j < 10; j++) {
-                images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk0" + i + ".png")));
-            }
-            images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk10.png")));
-            images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk11.png")));
-
-            this.width = images.get(0).getWidth();
-            this.height = images.get(0).getHeight();
-            this.boundingBox = new BoundingBox(new Vec2(x, y), new Vec2(x + width, y - height));
-        }
+        this.width = images.get(0).getWidth();
+        this.height = images.get(0).getHeight();
+        this.boundingBox = new BoundingBox(new Vec2(x, y), new Vec2(x + width, y - height));
     }
 
     public BufferedImage getImage() {
@@ -74,7 +73,6 @@ public class Player extends GameObject {
         }
         updateAnimation();
     }
-
     public void playSound(String path){
         File lol = new File(path);
         try{

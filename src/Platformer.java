@@ -8,9 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +89,7 @@ public class Platformer extends JFrame{
 				player.update();
 				checkCollision();
 				updateGameStateAndRepaint();
-				delta--;
+
 			}
 		}, 0, 10); // Schedule the task to run every 10 ms
         paint(getGraphics());
@@ -112,7 +110,7 @@ public class Platformer extends JFrame{
 		int playerCenterX = player.x + player.getImage().getWidth() / 2;
 
 //		System.out.println("Player : "+player.x);
-		int maxOffsetX = l.getResultingImage().getWidth(null) - this.getWidth();
+		int maxOffsetX = l.getResultingImage().getWidth(this) - this.getWidth();
 
 		l.offsetX = Math.max(0, Math.min(playerCenterX - this.getWidth() / 2, maxOffsetX));
 		repaint();
@@ -138,7 +136,7 @@ public class Platformer extends JFrame{
 		BufferedImage visibleLevel =
 				img_level.getSubimage((int) l.offsetX, 0, 1000, l.getHeight());
 		g2d.drawImage(visibleLevel, 0, 0, this);
-		g2d.drawImage(player.getImage(), player.x - (int) l.offsetX, player.y, this);
+		g2d.drawImage(player.getImage(), player.x, player.y, this);
 
 		// bullets
 		for (Bullet bullet: bullets) {
@@ -172,7 +170,11 @@ public class Platformer extends JFrame{
 		}
 		// shield
 		if (player.shield!=null){
-			}
+			g2d.setColor(Color.BLUE);
+			int playerCenterX = player.x + player.getImage().getWidth() / 2;
+			int playerCenterY = player.y + player.getImage().getHeight() / 2;
+			g2d.drawOval(playerCenterX - 150, playerCenterY-150, 300, 300);
+		}
 	}
 
 
