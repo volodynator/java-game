@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -15,6 +16,7 @@ public class Level {
     float offsetX;
     public static ArrayList<BufferedImage> tileImages = new ArrayList<>();
     public int tileSize = 70;
+
 
     public Level(String levelMapPath) {
         try {
