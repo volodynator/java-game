@@ -20,6 +20,8 @@ public class BoundingBox {
                 (max.y >= b.min.y);
     }
 
+
+
     public Vec2 overlapSize(BoundingBox b) {
         Vec2 result = new Vec2(0, 0);
         // X-dimension
@@ -33,5 +35,37 @@ public class BoundingBox {
         else
             result.y = b.max.y - min.y;
         return result;
+    }
+
+    public ColisionType checkColision(BoundingBox b) {
+        if (!intersect(b)) {
+            return ColisionType.NONE;
+        }
+
+        Vec2 overlap = overlapSize(b);
+
+        if (overlap.x > overlap.y) {
+            // Vertical collision
+            if (min.y < b.min.y) {
+                return ColisionType.DOWN;
+            } else {
+                return ColisionType.UP;
+            }
+        } else {
+            // Horizontal collision
+            if (min.x < b.min.x) {
+                return ColisionType.RIGHT;
+            } else {
+                return ColisionType.LEFT;
+            }
+        }
+    }
+
+    public enum ColisionType {
+        NONE,
+        RIGHT,
+        LEFT,
+        UP,
+        DOWN
     }
 }

@@ -8,6 +8,8 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -22,6 +24,7 @@ public class Platformer extends JFrame implements Runnable{
 	Player player;
 	BufferStrategy bufferStrategy;
 	private boolean running = false;
+	public List<GameObject> gameObjects = new ArrayList<>();
 
 	public Platformer() {
 		//exit program when window is closed
@@ -60,6 +63,8 @@ public class Platformer extends JFrame implements Runnable{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		gameObjects.addAll(l.levelObjects);
 	}
 
 	private void startGame(){
@@ -115,6 +120,16 @@ public class Platformer extends JFrame implements Runnable{
 				img_level.getSubimage((int) l.offsetX, 0, 1000, l.getHeight());
 		g2d.drawImage(visibleLevel, 0, 0, this);
 		g2d.drawImage(player.getImage(), player.x - (int) l.offsetX, player.y, this);
+	}
+
+
+	private BoundingBox.ColisionType checkCollision(){
+		BoundingBox.ColisionType colisionType = BoundingBox.ColisionType.NONE;
+		for(GameObject o : gameObjects){
+			colisionType = player.getBoundingBox().checkColision(o.getBoundingBox());
+			System.out.println(colisionType + " " + o.getX() + " " + o.getY());
+		}
+		 return colisionType;
 	}
 
 

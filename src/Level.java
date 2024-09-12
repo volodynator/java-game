@@ -16,7 +16,7 @@ public class Level {
     float offsetX;
     public static ArrayList<BufferedImage> tileImages = new ArrayList<>();
     public int tileSize = 70;
-
+    public List<GameObject> levelObjects = new ArrayList<>();
 
     public Level(String levelMapPath) {
         try {
@@ -73,7 +73,10 @@ public class Level {
                 if (tileIndex < 0)
                     continue;
 
+//                g2d.drawImage(tileImages.get(tileIndex), null, x * tileSize, y * tileSize);
                 g2d.drawImage(tileImages.get(tileIndex), null, x * tileSize, y * tileSize);
+                levelObjects.add(new Tile(x * tileSize, y * tileSize, tileIndex, tileSize));
+
             }
         }
         g2d.dispose();
