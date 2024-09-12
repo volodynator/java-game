@@ -1,4 +1,5 @@
 import java.awt.*;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -8,46 +9,54 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
-import java.util.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Timer;
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import java.util.TimerTask;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Platformer extends JFrame {
+	public static final String BasePath = "./assets/";
 	@Serial
 	private static final long serialVersionUID = 5736902251450559962L;
-	Timer timer;
+
+	private Player p;
 	private Level l = null;
-	Player player;
+	private boolean isFullScreen = false;
 	BufferStrategy bufferStrategy;
-	private boolean running = false;
-
-	private List<Bullet> bullets = new ArrayList<>();
-	private boolean notEnoughMana = false;
-
+	java.util.List<Bullet> bullets = new ArrayList<>();
 	private int selectedItem = 0;
-	public List<Tile> levelObjects = new ArrayList<>();
+
+
+
+	Timer gameStateUpdateTrigger;
+	boolean notEnoughMana = false;
 
 	public Platformer() {
-		// Exit program when window is closed
-		this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
+		//exit program when window is closed
+		this.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+					System.exit(0);
 			}
 		});
 
 		JFileChooser fc = new JFileChooser();
 		fc.setCurrentDirectory(new File("./"));
 		fc.setDialogTitle("Select input image");
-		FileFilter filter = new FileNameExtensionFilter("Level image (.bmp)", "bmp");
+		FileFilter filter = new FileNameExtensionFilter("Level image (.bmp)","bmp");
 		fc.setFileFilter(filter);
 		int result = fc.showOpenDialog(this);
 		File selectedFile = new File("");
 		addKeyListener(new AL(this));
+		createBufferStrategy(2);
+		bufferStrategy = this.getBufferStrategy();
+
 
 		if (result == JFileChooser.APPROVE_OPTION) {
 			selectedFile = fc.getSelectedFile();
@@ -58,42 +67,41 @@ public class Platformer extends JFrame {
 		}
 
 		try {
-			l = new Level(selectedFile.getAbsolutePath());
-			player = new Player();
-			player.playSound(".\\assets\\Sound\\soundtrack.wav");
-			createBufferStrategy(2);
-			bufferStrategy = this.getBufferStrategy();
+			l = new Level(selectedFile.getAbsolutePath(), BasePath + "background0.png");
+			p = l.player;
 
-			this.getGraphics().setColor(Color.RED);
-			this.setBounds(0, 0, 1000, 10 * 70);
+			this.setBounds(0, 0, 1000, 12 * 70);
 			this.setVisible(true);
+			gameStateUpdateTrigger = new Timer();
+			gameStateUpdateTrigger.scheduleAtFixedRate(new TimerTask() {
 
+				@Override
+				public void run() {
+					updateGameStateAndRepaint();
+				}
+
+			}, 0, 10);
+			playSound(BasePath + "Sound/soundtrack.wav");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		levelObjects.addAll((Collection<? extends Tile>) l.levelObjects);
-		startTimer();
 	}
 
-	private void startTimer() {
-		timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				// Call update and repaint periodically
-				l.update();
-				player.update();
-				checkCollision();
-				updateGameStateAndRepaint();
-				((AL) getKeyListeners()[0]).updateMovement(); // Call updateMovement regularly
-			}
-		}, 0, 10); // Adjust the timer as per game update speed
-		paint(getGraphics());
+	private void restart() throws IOException {
+		p.pos.x = 0;
+		p.pos.y = 0;
+		l.offsetX = 0;
+		p.hp = 100;
+		l.initLevel();
+		p.points = 0;
 	}
 
 	private void updateGameStateAndRepaint() {
 		l.update();
+		p.update();
+		checkCollision();
+		repaint();
 		Iterator<Bullet> bulletIterator = bullets.iterator();
 		while (bulletIterator.hasNext()) {
 			Bullet bullet = bulletIterator.next();
@@ -103,53 +111,124 @@ public class Platformer extends JFrame {
 				bulletIterator.remove();
 			}
 		}
-		int playerCenterX = player.x + player.getImage().getWidth() / 2;
-		int maxOffsetX = l.getResultingImage().getWidth(null) - this.getWidth();
+	}
 
-		l.offsetX = Math.max(0, Math.min(playerCenterX - this.getWidth() / 2, maxOffsetX));
-		repaint();
+	private void checkCollision() {
+		float playerPosX = p.pos.x;
+
+		p.collidesDown = false;
+		p.collidesLeft = false;
+		p.collidesRight = false;
+		p.collidesTop = false;
+		p.collides = false;
+
+		// Collision
+		for (int i = 0; i < l.tiles.size(); i++) {
+
+			Tile tile = l.tiles.get(i);
+
+			Vec2 overlapSize = tile.bb.OverlapSize(p.boundingBox);
+
+			float epsilon = 8.f; // experiment with this value. If too low,the player might get stuck when walking over the
+			                     // ground. If too high, it can cause glitching inside/through walls
+
+
+			if (overlapSize.x >= 0 && overlapSize.y >= 0 && Math.abs(overlapSize.x + overlapSize.y) >= epsilon) {
+
+				if(tile.hasRigidCollision) {
+					if (Math.abs(overlapSize.x) > Math.abs(overlapSize.y)) {// Y overlap correction
+
+						if (p.boundingBox.min.y + p.boundingBox.max.y > tile.bb.min.y + tile.bb.max.y) { // player comes from below
+							p.pos.y += overlapSize.y;
+							p.collidesTop = true;
+						} else { // player comes from above
+							p.pos.y -= overlapSize.y;
+							p.collidesDown = true;
+						}
+					} else { // X overlap correction
+						if (p.boundingBox.min.x + p.boundingBox.max.x > tile.bb.min.x + tile.bb.max.x) { // player comes from right
+							p.pos.x += overlapSize.x;
+							p.collidesLeft = true;
+						} else { // player comes from left
+							p.pos.x -= overlapSize.x;
+							p.collidesRight = true;
+						}
+					}
+				}
+				p.collides = true;
+				tile.onCollision(p);
+				p.updateBoundingBox();
+				if (p.hp == 0)
+					try {
+						gameOver();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			}
+		}
+	}
+
+	private void gameOver() throws IOException {
+		restart();
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		Graphics2D g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
+		Graphics2D g2 = null;
+
 		try {
-			try {
-				draw(g2);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			g2 = (Graphics2D) bufferStrategy.getDrawGraphics();
+			draw(g2);
+
 		} finally {
 			g2.dispose();
 		}
 		bufferStrategy.show();
 	}
 
-	private void draw(Graphics2D g2d) throws IOException {
-		BufferedImage img_level = (BufferedImage) l.getResultingImage();
-		BufferedImage visibleLevel = img_level.getSubimage((int) l.offsetX, 0, 1000, l.getHeight());
-		g2d.drawImage(visibleLevel, 0, 0, this);
-		g2d.drawImage(player.getImage(), player.x - (int) l.offsetX, player.y, this);
+	private void draw(Graphics2D g2d) {
+		BufferedImage level = (BufferedImage) l.getResultingImage();
+		if (l.offsetX > level.getWidth() - 1000)
+			l.offsetX = level.getWidth() - 1000;
+		BufferedImage bi = level.getSubimage((int) l.offsetX, 0, 1000, level.getHeight());
+		g2d.drawImage(l.backgroundImage, 0, 0, this);
+		g2d.drawImage(bi, 0, 0, this);
 
-		// Bullets
+		for (int i = 0; i< l.tiles.size(); i++) {
+			l.tiles.get(i).draw(g2d,l.offsetX,0);
+		}
+		g2d.drawImage(getPlayer().getPlayerImage(), (int) (getPlayer().pos.x-l.offsetX), (int) getPlayer().pos.y, this);
+
+
+		drawBullets(g2d);
+		drawHPMana(g2d);
+		drawSkills(g2d);
+		drawShield(g2d);
+
+	}
+
+	public void drawBullets(Graphics2D g2d){
 		for (Bullet bullet : bullets) {
 			g2d.drawImage(bullet.image, bullet.x, bullet.y, this);
 		}
+	}
+	public void drawHPMana(Graphics2D g2d){
 		// HP
 		g2d.setColor(Color.RED);
 		g2d.drawRoundRect(50, 50, 300, 20, 4, 4);
-		g2d.fillRoundRect(50, 50, player.hp * 3, 20, 4, 4);
+		g2d.fillRoundRect(50, 50, getPlayer().hp * 3, 20, 4, 4);
 
 		// Mana
 		g2d.setColor(Color.BLUE);
 		g2d.drawRoundRect(50, 90, 300, 20, 4, 4);
-		g2d.fillRoundRect(50, 90, player.mana * 3, 20, 4, 4);
+		g2d.fillRoundRect(50, 90, getPlayer().mana * 3, 20, 4, 4);
 		if (notEnoughMana) {
 			g2d.setColor(Color.RED);
-			g2d.fillRoundRect(50, 90, player.mana * 3, 20, 4, 4);
+			g2d.fillRoundRect(50, 90, getPlayer().mana * 3, 20, 4, 4);
 			notEnoughMana = false;
 		}
-		// Skills
+	}
+	public void drawSkills(Graphics2D g2d){
 		g2d.setColor(Color.RED);
 		int space = 0;
 		for (int i = 0; i < 4; i++) {
@@ -157,59 +236,35 @@ public class Platformer extends JFrame {
 				g2d.setColor(Color.GREEN);
 			}
 			g2d.drawRoundRect(650 + space, 50, 50, 50, 4, 4);
-			g2d.drawImage(player.itemsList.get(i).icon, 650 + space, 50, 50, 50, this);
+			g2d.drawImage(getPlayer().itemsList.get(i).icon, 650 + space, 50, 50, 50, this);
 			space += 70;
 			g2d.setColor(Color.RED);
 		}
-		// Shield
-		if (player.shield != null) {
+	}
+	public void drawShield(Graphics2D g2d){
+		if (getPlayer().shield != null) {
+
 		}
 	}
 
-	private void checkCollision() {
-		BoundingBox.ColisionType colisionType = BoundingBox.ColisionType.NONE;
-
-		for (Tile tile : levelObjects) {
-			switch (tile.tileIndex) {
-				case 0: {
-					colisionType = player.getBoundingBox().checkColision(tile.getBoundingBox());
-					switch (colisionType) {
-						case DOWN -> {
-							switch (colisionType) {
-								case LEFT, RIGHT ->{
-									player.inAir = false;
-									player.move("stop");
-									return;
-								}
-							}
-							player.inAir = false;
-							return;
-						}
-
-                    }
-				}
-			}
-		}
-
-		player.inAir = true;
-		if (player.y > l.getHeight()) {
-			player.restart();
-		}
+	public Player getPlayer() {
+		return this.p;
 	}
 
-	@Override
-	public void dispose() {
-		if (timer != null) {
-			timer.cancel();
-		}
-		super.dispose();
+	public Level getLevel() {
+		return this.l;
+	}
+
+	public void setFullScreenMode(boolean b) {
+		this.isFullScreen = b;
+	}
+
+	public boolean getFullScreenMode() {
+		return this.isFullScreen;
 	}
 
 	public class AL extends KeyAdapter {
 		Platformer p;
-		private boolean leftPressed = false;
-		private boolean rightPressed = false;
-		private boolean jumpPressed = false;
 
 		public AL(Platformer p) {
 			super();
@@ -219,34 +274,11 @@ public class Platformer extends JFrame {
 		@Override
 		public void keyPressed(KeyEvent event) {
 			int keyCode = event.getKeyCode();
+			Player player = p.getPlayer();
 
 			if (keyCode == KeyEvent.VK_ESCAPE) {
 				dispose();
 			}
-
-			if (keyCode == KeyEvent.VK_LEFT) {
-				leftPressed = true;
-			}
-
-			if (keyCode == KeyEvent.VK_RIGHT) {
-				rightPressed = true;
-			}
-
-			if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_K) {
-				jumpPressed = true;
-			}
-
-			if (keyCode == KeyEvent.VK_E) {
-				try {
-					System.out.println("Mana: " + player.mana);
-					player.itemsList.get(selectedItem).use();
-					bullets.addAll(player.bullets);
-				} catch (IOException | NotEnoughManaExeption e) {
-					notEnoughMana = true;
-					player.playSound("assets/Sound/button-18.wav");
-				}
-			}
-
 			if (keyCode == KeyEvent.VK_1) {
 				selectedItem = 0;
 			}
@@ -262,39 +294,80 @@ public class Platformer extends JFrame {
 			if (keyCode == KeyEvent.VK_4) {
 				selectedItem = 3;
 			}
+
+			if (keyCode == KeyEvent.VK_UP) {
+			}
+
+			if (keyCode == KeyEvent.VK_DOWN) {
+			}
+
+			if (keyCode == KeyEvent.VK_LEFT) {
+				player.walkingLeft = true;
+			}
+
+			if (keyCode == KeyEvent.VK_RIGHT) {
+				player.walkingRight = true;
+			}
+
+			if (keyCode == KeyEvent.VK_SPACE) {
+				player.jump = true;
+			}
+
+			if (keyCode == KeyEvent.VK_E) {
+				try {
+					System.out.println("Mana: " + player.mana);
+
+					player.itemsList.get(selectedItem).use();
+					bullets.addAll(player.bullets);
+				} catch (IOException | NotEnoughManaExeption e) {
+					notEnoughMana = true;
+					player.playSound("assets/Sound/button-18.wav");
+				}
+			}
+			if (keyCode == KeyEvent.VK_R) {
+				try {
+					restart();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 
 		@Override
 		public void keyReleased(KeyEvent event) {
 			int keyCode = event.getKeyCode();
+			Player player = p.getPlayer();
+
+			if (keyCode == KeyEvent.VK_UP) {
+			}
+
+			if (keyCode == KeyEvent.VK_DOWN) {
+			}
 
 			if (keyCode == KeyEvent.VK_LEFT) {
-				leftPressed = false;
+				player.walkingLeft = false;
 			}
 
 			if (keyCode == KeyEvent.VK_RIGHT) {
-				rightPressed = false;
+				player.walkingRight = false;
 			}
 
-			if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_K) {
-				jumpPressed = false;
-			}
-		}
-
-		public void updateMovement() {
-			if (leftPressed) {
-				player.move("left");
-			}
-			if (rightPressed) {
-				player.move("right");
-			}
-			if (jumpPressed) {
-				player.jump();
+			if (keyCode == KeyEvent.VK_SPACE) {
+				player.jump = false;
 			}
 		}
 	}
 
-	public Player getPlayer() {
-		return player;
+	public void playSound(String path){
+		File lol = new File(path);
+
+		try{
+			Clip clip = AudioSystem.getClip();
+			clip.open(AudioSystem.getAudioInputStream(lol));
+			clip.start();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 }

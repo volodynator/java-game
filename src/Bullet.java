@@ -10,7 +10,7 @@ public class Bullet {
     int y;
     int range = 500;
 
-    BufferedImage image = ImageIO.read(new File(".\\assets\\Items\\fireball.png"));
+    BufferedImage image = ImageIO.read(new File("assets/Items/fireball.png"));
 
     public Bullet(int startX, int startY) throws IOException {
         this.startX = startX;

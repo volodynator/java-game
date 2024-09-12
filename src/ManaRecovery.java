@@ -4,14 +4,14 @@ import java.io.IOException;
 
 public class ManaRecovery extends Item{
     int points;
-    public ManaRecovery(Player player, int points) throws IOException {
+    public ManaRecovery(Level level, int points) throws IOException {
         this.points = points;
-        this.player = player;
+        this.level = level;
         this.icon = ImageIO.read(new File("assets/Items/plantPurple.png"));
     }
 
     @Override
     public void use() throws IOException, NotEnoughManaExeption {
-        player.manaRegeneration(points);
+        level.player.manaRegeneration(points);
     }
 }

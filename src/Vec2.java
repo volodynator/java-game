@@ -26,8 +26,4 @@ public class Vec2 {
     public Vec2 div(Vec2 b) {
         return new Vec2(x / b.x, y / b.y);
     }
-
-    public String toString(){
-        return "(" + x + ", " + y + ")";
-    }
 }

@@ -3,7 +3,7 @@ import java.io.IOException;
 
 public abstract class Item {
     BufferedImage icon;
-    Player player;
+    Level level;
 
     public void use() throws IOException, NotEnoughManaExeption {
 

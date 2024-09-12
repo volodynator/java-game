@@ -5,8 +5,8 @@ import java.io.IOException;
 
 public class Gun extends Weapon{
 
-    public Gun(Player player, int cost, int damage) throws IOException {
-        this.player = player;
+    public Gun(Level level, int cost, int damage) throws IOException {
+        this.level = level;
         this.mana = cost;
         this.damage = damage;
         this.icon = ImageIO.read(new File("assets/Items/fireball.png"));
@@ -14,10 +14,11 @@ public class Gun extends Weapon{
 
     @Override
     public void use() throws IOException, NotEnoughManaExeption {
-        if (player.mana-mana>0){
-            player.mana-=mana;
-            player.bullets.add(new Bullet(player.x + 2, player.y + 2));
-            player.playSound("C:\\Users\\Volodymyr\\Downloads\\Step0\\Step0\\assets\\Sound\\gun-gunshot-01.wav");
+        if (level.player.mana-mana>0){
+            level.player.mana-=mana;
+            Bullet blt = new Bullet((int) (level.player.pos.x - level.offsetX), (int) level.player.pos.y);
+            level.player.bullets.add(blt);
+            level.player.playSound("assets\\Sound\\gun-gunshot-01.wav");
         }
         else {
             throw new NotEnoughManaExeption();
