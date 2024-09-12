@@ -93,10 +93,7 @@ public class Level {
 			backgroundImage = op.filter(backgroundImage, null);
 		}
 
-		for (int x = 0; x < resultingLevelImg.getWidth(null); x += cloudImage1.getWidth() * 2) {
-			Random r = new Random();
-			g2d.drawImage((BufferedImage) cloudImage1, null, x + r.nextInt(250), r.nextInt(250) + 50);
-		}
+
 
 		tiles.clear();
 
