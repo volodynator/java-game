@@ -29,6 +29,8 @@ public class Player extends GameObject {
     int curr = 0;
     public static final String path = ".\\assets\\Player\\";
 
+
+
     public Player() throws IOException {
         this.x = 10;
         this.y = 10;
@@ -38,21 +40,22 @@ public class Player extends GameObject {
 
         for (int i = 1; i < 10; i++) {
             images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk0" + i + ".png")));
-        Healer healer = new Healer(this, 20);
-        ManaRecovery manaRecovery = new ManaRecovery(this, 20);
-        itemsList.add(weapon);
-        itemsList.add(healer);
-        itemsList.add(manaRecovery);
-        itemsList.add(weapon);
-        for(int i = 1; i<10; i++){
-            images.add(ImageIO.read(new File( path +"p1_walk\\PNG\\p1_walk0"+i+".png")));
-        }
-        images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk10.png")));
-        images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk11.png")));
+            Healer healer = new Healer(this, 20);
+            ManaRecovery manaRecovery = new ManaRecovery(this, 20);
+            itemsList.add(weapon);
+            itemsList.add(healer);
+            itemsList.add(manaRecovery);
+            itemsList.add(weapon);
+            for (int j = 1; j < 10; j++) {
+                images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk0" + i + ".png")));
+            }
+            images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk10.png")));
+            images.add(ImageIO.read(new File(path + "p1_walk\\PNG\\p1_walk11.png")));
 
-        this.width = images.get(0).getWidth();
-        this.height = images.get(0).getHeight();
-        this.boundingBox = new BoundingBox(new Vec2(x, y), new Vec2(x + width, y - height));
+            this.width = images.get(0).getWidth();
+            this.height = images.get(0).getHeight();
+            this.boundingBox = new BoundingBox(new Vec2(x, y), new Vec2(x + width, y - height));
+        }
     }
 
     public BufferedImage getImage() {
@@ -71,6 +74,7 @@ public class Player extends GameObject {
         }
         updateAnimation();
     }
+
     public void playSound(String path){
         File lol = new File(path);
         try{
@@ -123,34 +127,4 @@ public class Player extends GameObject {
     }
 
 
-    public void update() {
-
-        if (inAir) {
-            vely += gravity;
-            if (vely > maxFallSpeed) {
-                vely = maxFallSpeed;
-            }
-        } else vely = 0;
-
-
-        x += velx;
-        y += vely;
-
-
-        if (velx != 0 && !inAir) {
-            velx--;
-            if (Math.abs(velx) < 1) velx = 0;
-        }
-
-
-        if (inAir) {
-            velx = (int) (velx * airResistance);
-        }
-
-        // Update bounding box for collision detection
-        this.boundingBox.min.x = x;
-        this.boundingBox.min.y = y;
-        this.boundingBox.max.x = x + width;
-        this.boundingBox.max.y = y + height;
-    }
 }
