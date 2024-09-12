@@ -13,7 +13,8 @@ public class Player extends GameObject {
     private static final int maxFallSpeed = 15;
     private static final float airResistance = 0.85f;
     public boolean inAir = false;
-    public boolean wantsToJump = false;
+    public boolean stop = false;
+    private int moveSpeed = 6;
     int hp = 20;
     int mana = 100;
     List<Bullet> bullets = new ArrayList<>();
@@ -66,14 +67,20 @@ public class Player extends GameObject {
     }
 
     public void move(String direction) {
-        if ("left".equals(direction)) {
-            velx = -6;
-        } else if ("right".equals(direction)) {
-            velx = 6;
-        } else if ("stop".equals(direction)) {
-            velx =0;
+        if ("stop".equals(direction)) {
+            stop = true;
+            update();
         }
-        updateAnimation();
+        else if ("left".equals(direction)) {
+            velx = -moveSpeed;
+            stop = false;
+            updateAnimation();
+        } else if ("right".equals(direction)) {
+            velx = moveSpeed;
+            stop = false;
+            updateAnimation();
+        }
+
     }
     public void playSound(String path){
         File lol = new File(path);
@@ -127,7 +134,11 @@ public class Player extends GameObject {
     }
 
     public void update() {
-        if (inAir) {
+        if(stop) {
+            velx = 0;
+            vely = 0;
+        }
+        else if (inAir) {
             vely += gravity;
 
             // Limit fall speed

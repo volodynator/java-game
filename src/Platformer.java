@@ -168,27 +168,24 @@ public class Platformer extends JFrame {
 
 	private void checkCollision() {
 		BoundingBox.ColisionType colisionType = BoundingBox.ColisionType.NONE;
-
+		boolean isCollidingWithFloor = false;
+		boolean isCollidingWithWall = false;
 		for (Tile tile : levelObjects) {
 			switch (tile.tileIndex) {
 				case 0: {
 					colisionType = player.getBoundingBox().checkColision(tile.getBoundingBox());
 					switch (colisionType) {
-						case DOWN -> {
-							switch (colisionType) {
-								case LEFT, RIGHT ->{
-									player.inAir = false;
-									player.move("stop");
-									return;
-								}
-							}
-							player.inAir = false;
-							return;
-						}
-
-                    }
+						case DOWN: isCollidingWithFloor = true; break;
+						case LEFT: isCollidingWithWall = true; break;
+						case RIGHT: isCollidingWithFloor = false; break;
+					}
 				}
 			}
+		}
+		if (isCollidingWithFloor) {
+			if (isCollidingWithWall) player.move("stop");
+			player.inAir = false;
+			return;
 		}
 
 		player.inAir = true;
