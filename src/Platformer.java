@@ -81,11 +81,11 @@ public class Platformer extends JFrame {
 		}
 
 		try {
-			l = new Level(selectedFile.getAbsolutePath(), "assets/ourAssets/redBackground.jpg");
+			l = new Level(selectedFile.getAbsolutePath(), "assets/ourAssets/bestBackground (1).png");
 			p = l.player;
 
 
-			this.setBounds(0, 0, 1000, 20 * 70);
+			this.setBounds(0, 0, 1000, 10 * 70);
 			this.setVisible(true);
 			gameStateUpdateTrigger = new Timer();
 			gameStateUpdateTrigger.scheduleAtFixedRate(new TimerTask() {
@@ -126,14 +126,14 @@ public class Platformer extends JFrame {
 		}
 		checkCollision();
 		checkEnemiesCollision();
+		bullets.removeAll(bulletsToRemove);
+		bulletsToRemove.clear();
 		for (Explosion explosion : explosions) {
 			explosion.update();
 			if (explosion.isFinished()) {
 				explosions.remove(explosion);
 			}
 		}
-		bullets.removeAll(bulletsToRemove);
-		bulletsToRemove.clear();
 		repaint();
 	}
 
@@ -315,12 +315,12 @@ public class Platformer extends JFrame {
 	}
 	public void drawHPMana(Graphics2D g2d){
 		// HP
-		g2d.setColor(Color.RED);
+		g2d.setColor(new Color(138, 23, 23));
 		g2d.drawRoundRect(50, 50, 300, 20, 4, 4);
 		g2d.fillRoundRect(50, 50, getPlayer().hp * 3, 20, 4, 4);
 
 		// Mana
-		g2d.setColor(Color.BLUE);
+		g2d.setColor(new Color(51, 99, 187));
 		g2d.drawRoundRect(50, 90, 300, 20, 4, 4);
 		g2d.fillRoundRect(50, 90, getPlayer().mana * 3, 20, 4, 4);
 		if (notEnoughMana) {

@@ -118,7 +118,7 @@ public class Enemy {
         Random random = new Random();
         double r = random.nextDouble(40);
         int distance = (int) (pos.x - l.player.pos.x);
-        if (distance<500 && r<0.15){
+        if (distance<500 && r<0.3){
             EnemyGun gun =new EnemyGun(this, l, 10);
             gun.shoot();
         }

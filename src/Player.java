@@ -67,11 +67,11 @@ public class Player {
 			BufferedImage imageWalk;
 			BufferedImage imageEmpty;
 			BufferedImage imageHalf;
-			imageWalk = ImageIO.read(new File("assets/ourAssets/walk/1.png"));
+			imageWalk = ImageIO.read(new File("assets/ourAssets/walk/1.0.png"));
 			tilesWalk.add(imageWalk);
-			imageHalf = ImageIO.read(new File("assets/ourAssets/walk/2.png"));
+			imageHalf = ImageIO.read(new File("assets/ourAssets/walk/2.0.png"));
 			tilesWalk.add(imageHalf);
-			imageEmpty = ImageIO.read(new File("assets/ourAssets/walk/З.png"));
+			imageEmpty = ImageIO.read(new File("assets/ourAssets/walk/3.0.png"));
 			tilesWalk.add(imageEmpty);
 			
 		} catch (IOException e) {

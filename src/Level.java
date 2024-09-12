@@ -126,7 +126,7 @@ public class Level {
 					float yPosition = y*Tile.tileSize;
 					Random r = new Random();
 					double d = r.nextDouble();
-					if (d>0.2 && d<0.3){
+					if (d>0.2 && d<0.23){
 						Enemy enemy = new Enemy(this, (int) xPosition, (int) yPosition-70);
 						enemies.add(enemy);
 					}
