@@ -12,6 +12,8 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -26,6 +28,7 @@ public class Platformer extends JFrame implements Runnable{
 	Player player;
 	BufferStrategy bufferStrategy;
 	private boolean running = false;
+	public List<GameObject> gameObjects = new ArrayList<>();
 
 	private List<Bullet> bullets = new ArrayList<>();
 
@@ -67,6 +70,8 @@ public class Platformer extends JFrame implements Runnable{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		gameObjects.addAll(l.levelObjects);
 	}
 
 	private void startGame(){
@@ -106,6 +111,8 @@ public class Platformer extends JFrame implements Runnable{
 			}
 		}
 		int playerCenterX = player.x + player.getImage().getWidth() / 2;
+		System.out.println("Off: "+l.offsetX);
+		System.out.println("Player : "+player.x);
 		int maxOffsetX = l.getResultingImage().getWidth(null) - this.getWidth();
 
 		l.offsetX = Math.max(0, Math.min(playerCenterX - this.getWidth() / 2, maxOffsetX));
@@ -133,6 +140,16 @@ public class Platformer extends JFrame implements Runnable{
 		for (Bullet bullet: bullets) {
 			g2d.drawImage(bullet.image, bullet.x, bullet.y, this);
 		}
+	}
+
+
+	private BoundingBox.ColisionType checkCollision(){
+		BoundingBox.ColisionType colisionType = BoundingBox.ColisionType.NONE;
+		for(GameObject o : gameObjects){
+			colisionType = player.getBoundingBox().checkColision(o.getBoundingBox());
+			System.out.println(colisionType + " " + o.getX() + " " + o.getY());
+		}
+		 return colisionType;
 	}
 
 
