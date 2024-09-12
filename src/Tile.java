@@ -7,7 +7,7 @@ public class Tile extends GameObject {
         this.tileIndex = tileIndex;
         this.width = size;
         this.height = size;
-        this.boundingBox = new BoundingBox(new Vec2(x,y), new Vec2(x + width,y - height));
+        this.boundingBox = new BoundingBox(new Vec2(x,y), new Vec2(x + width,y + height));
     }
 
 }

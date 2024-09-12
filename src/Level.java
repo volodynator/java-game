@@ -16,7 +16,7 @@ public class Level {
     float offsetX;
     public static ArrayList<BufferedImage> tileImages = new ArrayList<>();
     public int tileSize = 70;
-    public List<GameObject> levelObjects = new ArrayList<>();
+    public List<Tile> levelObjects = new ArrayList<>();
 
     public Level(String levelMapPath) {
         try {
@@ -65,17 +65,23 @@ public class Level {
 
                 // Compare color of pixels in order to select the corresponding tiles
 
-                if (color.equals(Color.BLACK))
+                if (color.equals(Color.BLACK)){
                     tileIndex = 0;
-                if (color.equals(Color.BLUE))
+                    levelObjects.add(new Tile(x * tileSize, y * tileSize, tileIndex, tileSize));
+                }
+
+                else if (color.equals(Color.BLUE)) {
                     tileIndex = 1;
+                    levelObjects.add(new Tile(x * tileSize, y * tileSize, tileIndex, tileSize));
+                }
 
                 if (tileIndex < 0)
                     continue;
 
 //                g2d.drawImage(tileImages.get(tileIndex), null, x * tileSize, y * tileSize);
                 g2d.drawImage(tileImages.get(tileIndex), null, x * tileSize, y * tileSize);
-                levelObjects.add(new Tile(x * tileSize, y * tileSize, tileIndex, tileSize));
+
+
 
             }
         }

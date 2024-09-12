@@ -8,23 +8,22 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class Platformer extends JFrame implements Runnable{
+public class Platformer extends JFrame{
 	@Serial
 	private static final long serialVersionUID = 5736902251450559962L;
-
+	private Timer timer;
 	private Level l = null;
 	Player player;
 	BufferStrategy bufferStrategy;
 	private boolean running = false;
-	public List<GameObject> gameObjects = new ArrayList<>();
+	public List<Tile> levelObjects = new ArrayList<>();
 
 	public Platformer() {
 		//exit program when window is closed
@@ -59,44 +58,38 @@ public class Platformer extends JFrame implements Runnable{
 
 			this.setBounds(0, 0, 1000, 10 * 70);
 			this.setVisible(true);
-			startGame();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		gameObjects.addAll(l.levelObjects);
+		levelObjects.addAll((Collection<? extends Tile>) l.levelObjects);
+		startTimer();
 	}
 
-	private void startGame(){
-		running = true;
-		Thread game = new Thread(this);
-		game.start();
-	}
-	@Override
-	public void run() {
-		long lastTime = System.nanoTime();
-		final double nsPerTick = 1000000000.0 / 60.0; // 60 FPS
 
-		double delta = 0;
-		while (running) {
-			long now = System.nanoTime();
-			delta += (now - lastTime) / nsPerTick;
-			lastTime = now;
-
-			while (delta >= 1) {
+	private void startTimer() {
+		timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				// Call update and repaint periodically
+				l.update();
+				player.update();
+				checkCollision();
 				updateGameStateAndRepaint();
-				delta--;
+
 			}
-		}
-		paint(getGraphics());
+		}, 0, 10); // Schedule the task to run every 10 ms
 	}
 
 
 	private void updateGameStateAndRepaint() {
 		l.update();
+		checkCollision();
 		int playerCenterX = player.x + player.getImage().getWidth() / 2;
-		System.out.println("Off: "+l.offsetX);
-		System.out.println("Player : "+player.x);
+
+//		System.out.println("Player : "+player.x);
 		int maxOffsetX = l.getResultingImage().getWidth(null) - this.getWidth();
 
 		l.offsetX = Math.max(0, Math.min(playerCenterX - this.getWidth() / 2, maxOffsetX));
@@ -123,14 +116,46 @@ public class Platformer extends JFrame implements Runnable{
 	}
 
 
-	private BoundingBox.ColisionType checkCollision(){
+	private void checkCollision(){
 		BoundingBox.ColisionType colisionType = BoundingBox.ColisionType.NONE;
-		for(GameObject o : gameObjects){
-			colisionType = player.getBoundingBox().checkColision(o.getBoundingBox());
-			System.out.println(colisionType + " " + o.getX() + " " + o.getY());
+
+		for(Tile tile : levelObjects){
+			switch(tile.tileIndex){
+				case 0: {
+					colisionType = player.getBoundingBox().checkColision(tile.getBoundingBox());
+					switch(colisionType){
+						case DOWN -> {
+							player.inAir = false;
+							return;
+						}
+
+					}
+				}
+//				case 1: {
+//					colisionType = player.getBoundingBox().checkColision(tile.getBoundingBox());
+//					if(colisionType != BoundingBox.ColisionType.NONE){
+//						System.out.println("restart");
+//						player.restart();
+//					}
+//				}
+			}
 		}
-		 return colisionType;
+
+		player.inAir = true;
+		if (player.y > l.getHeight()) {
+			player.restart();
+		}
+
 	}
+	@Override
+	public void dispose() {
+		// Stop the timer when the window is closed
+		if (timer != null) {
+			timer.cancel();
+		}
+		super.dispose();
+	}
+
 
 
 	public class AL extends KeyAdapter {
@@ -150,18 +175,16 @@ public class Platformer extends JFrame implements Runnable{
 			}
 
 			if (keyCode == KeyEvent.VK_LEFT) {
-				player.move(-3, 0);
+				player.move("left");
 			}
 
 			if (keyCode == KeyEvent.VK_RIGHT) {
-				player.move(3, 0);
+				player.move("right");
 			}
-			if (keyCode == KeyEvent.VK_UP) {
-				player.move(0, -3);
+			if (keyCode == KeyEvent.VK_SPACE) {
+				player.jump();
 			}
-			if (keyCode == KeyEvent.VK_DOWN) {
-				player.move(0, 3);
-			}
+
 		}
 	}
 

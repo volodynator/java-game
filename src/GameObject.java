@@ -24,4 +24,15 @@ public abstract class GameObject {
     public int getY() {
         return y;
     }
+
+    @Override
+    public String toString() {
+        return "GameObject{" +
+                "x=" + x +
+                ", y=" + y +
+                ", width=" + width +
+                ", height=" + height +
+                ", boundingBox=" + boundingBox +
+                '}';
+    }
 }

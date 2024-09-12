@@ -38,6 +38,7 @@ public class BoundingBox {
     }
 
     public ColisionType checkColision(BoundingBox b) {
+
         if (!intersect(b)) {
             return ColisionType.NONE;
         }
@@ -67,5 +68,9 @@ public class BoundingBox {
         LEFT,
         UP,
         DOWN
+    }
+    public String toString() {
+        return "BoundingBox [min=" + min + ", max=" + max + "]";
+
     }
 }
