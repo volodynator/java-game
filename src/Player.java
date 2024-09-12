@@ -54,7 +54,7 @@ public class Player extends GameObject {
 
         this.width = images.get(0).getWidth();
         this.height = images.get(0).getHeight();
-        this.boundingBox = new BoundingBox(new Vec2(x, y), new Vec2(x + width, y - height));
+        this.boundingBox = new BoundingBox(new Vec2(x, y), new Vec2(x + width - 10, y - height + 10));
     }
 
     public BufferedImage getImage() {
@@ -67,9 +67,11 @@ public class Player extends GameObject {
 
     public void move(String direction) {
         if ("left".equals(direction)) {
-            velx = -10;
+            velx = -6;
         } else if ("right".equals(direction)) {
-            velx = 10;
+            velx = 6;
+        } else if ("stop".equals(direction)) {
+            velx =0;
         }
         updateAnimation();
     }
@@ -125,7 +127,6 @@ public class Player extends GameObject {
     }
 
     public void update() {
-        // Apply gravity only if the player is in the air
         if (inAir) {
             vely += gravity;
 
@@ -134,30 +135,34 @@ public class Player extends GameObject {
                 vely = maxFallSpeed;
             }
         } else {
-            vely = 0;  // Stop vertical movement when on the ground
+            vely = 0;
         }
 
-        // Update horizontal and vertical positions
         x += velx;
         y += vely;
 
-        // Handle horizontal deceleration (friction)
         if (velx != 0 && !inAir) {
-            velx *= 0.9;  // Apply friction to horizontal movement when on the ground
+            velx *= 0.9;
             if (Math.abs(velx) < 1) {
-                velx = 0;  // Stop movement if velocity is low
+                velx = 0;
             }
         }
 
-        // Ensure player is in the air only if they are not on solid ground
+
         if (!inAir) {
-            velx *= 0.85f;  // Air resistance when the player is in the air
+            velx *= 0.85f;
         }
 
-        // Update bounding box for collision detection
-        this.boundingBox.min.x = x;
+        updateBoundingBox();
+
+
+
+    }
+
+    public void updateBoundingBox() {
+        this.boundingBox.min.x = x + 20;
         this.boundingBox.min.y = y;
-        this.boundingBox.max.x = x + width;
+        this.boundingBox.max.x = x + width - 20;
         this.boundingBox.max.y = y + height;
     }
 

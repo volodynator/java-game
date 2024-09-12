@@ -175,10 +175,18 @@ public class Platformer extends JFrame {
 					colisionType = player.getBoundingBox().checkColision(tile.getBoundingBox());
 					switch (colisionType) {
 						case DOWN -> {
+							switch (colisionType) {
+								case LEFT, RIGHT ->{
+									player.inAir = false;
+									player.move("stop");
+									return;
+								}
+							}
 							player.inAir = false;
 							return;
 						}
-					}
+
+                    }
 				}
 			}
 		}

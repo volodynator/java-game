@@ -1,6 +1,13 @@
 public class BoundingBox {
     Vec2 min;
     Vec2 max;
+
+    public int getCenterX (){
+        return (int) ((min.x + max.x )/2);
+    }
+    public int getCenterY (){
+        return (int) ((min.y + max.y )/2);
+    }
     public BoundingBox(Vec2 min, Vec2 max) {
         this.min = min;
         this.max = max;
