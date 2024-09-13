@@ -485,7 +485,7 @@ public class Platformer extends JFrame {
 					bullets.addAll(player.bullets);
 				} catch (IOException | NotEnoughManaExeption e) {
 					notEnoughMana = true;
-					player.playSound("assets/Sound/button-18.wav");
+					player.playSound("assets/ourAssets/effects/sound_not_enough.wav");
 				}
 			}
 			if (keyCode == KeyEvent.VK_R) {
