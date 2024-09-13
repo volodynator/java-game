@@ -102,7 +102,7 @@ public class Platformer extends JFrame {
 				}
 
 			}, 0, 10);
-			playSound(BasePath + "Sound/soundtrack.wav");
+			playSound("assets/ourAssets/sounds/Dungeon Battle.wav");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
