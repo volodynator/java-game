@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Enemy {
     boolean jump = false, walkingLeft = false, walkingRight = false;
@@ -19,14 +20,7 @@ public class Enemy {
     Vec2 posLastFrame;
     Vec2 gravity;
     Vec2 maxSpeed;
-
-    List<Item> itemsList = new ArrayList<>();
-    Shield shield = null;
-    float tmp;
-    int curr = 0;
-
-    int hp = 20;
-    int mana = 100;
+    int hp = 100;
     List<Bullet> bullets = new ArrayList<>();
 
     public Vec2 lastValidPosition;
@@ -37,7 +31,6 @@ public class Enemy {
     int numberAnimationStates = 0;
     int displayedAnimationState = 0;
     int moveCounter = 0;
-    int points = 0;
 
     float jumpPower = 35.f;
 
@@ -136,7 +129,7 @@ public class Enemy {
             Bullet bullet = bulletIterator.next();
             bullet.update();
 
-            if (bullet.delete()) {
+            if (bullet.shouldBeRemoved()) {
                 bulletIterator.remove();
             }
         }
@@ -237,5 +230,9 @@ public class Enemy {
             return tilesWalk.get(displayedAnimationState);
         }
         return tilesWalk.get(7);
+    }
+
+    public void damage(int points){
+        hp-=points;
     }
 }

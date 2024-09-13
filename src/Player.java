@@ -25,6 +25,7 @@ public class Player {
 
 	List<Item> itemsList = new ArrayList<>();
 	Shield shield = null;
+	boolean hasShield = false;
 	float tmp;
 	int curr = 0;
 

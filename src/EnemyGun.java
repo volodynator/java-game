@@ -12,7 +12,7 @@ public class EnemyGun {
     }
 
     public void shoot() throws IOException {
-        Bullet blt = new Bullet((int) (enemy.pos.x - level.offsetX), (int) enemy.pos.y-10, damage);
+        Bullet blt = new Bullet((int) enemy.pos.x, (int) enemy.pos.y-10, damage);
         if (enemy.facingLeft){
             blt.movingLeft = true;
         }

@@ -114,6 +114,8 @@ public class Platformer extends JFrame {
 		p.pos.y = 0;
 		l.offsetX = 0;
 		p.hp = 100;
+		l.enemies.clear();
+		bullets.clear();
 		l.initLevel();
 		p.points = 0;
 	}
@@ -123,7 +125,18 @@ public class Platformer extends JFrame {
 		p.update();
 		for (Enemy enemy : l.enemies) {
 			enemy.update();
+
+			Iterator<Bullet> bulletIterator = enemy.bullets.iterator();
+			while (bulletIterator.hasNext()) {
+				Bullet bullet = bulletIterator.next();
+				bullet.update();
+				if (bullet.shouldBeRemoved()) {
+					bulletIterator.remove();
+				}
+			}
+			bullets.addAll(enemy.bullets);
 		}
+
 		checkCollision();
 		checkEnemiesCollision();
 		bullets.removeAll(bulletsToRemove);
@@ -133,6 +146,9 @@ public class Platformer extends JFrame {
 			if (explosion.isFinished()) {
 				explosions.remove(explosion);
 			}
+		}
+		if (l.enemies.isEmpty()){
+			restart();
 		}
 		repaint();
 	}
@@ -152,13 +168,23 @@ public class Platformer extends JFrame {
 			while (bulletIterator.hasNext()) {
 				Bullet bullet = bulletIterator.next();
 				bullet.update();
-
-				if (p.boundingBox.intersect(bullet.boundingBox) && !bullet.hasCollided) {
-					System.out.println("Collision");
-					explosions.add(new Explosion(bullet.x, bullet.y, l));
-					p.damage(bullet.damage);
-					bullet.hasCollided=true;
-					bulletsToRemove.add(bullet);
+				if (!bullet.ownBullet){
+					if (p.boundingBox.intersect(bullet.boundingBox) && !bullet.hasCollided) {
+						if (!p.hasShield){
+							p.damage(bullet.damage);
+						}
+						else {
+							if (p.shield.hp>0){
+								p.shield.hp--;
+							}
+							else {
+								p.hasShield=false;
+							}
+						}
+						explosions.add(new Explosion(bullet.x, bullet.y, l));
+						bullet.hasCollided=true;
+						bulletsToRemove.add(bullet);
+					}
 				}
 			}
 		}
@@ -216,6 +242,25 @@ public class Platformer extends JFrame {
 			enemy.collidesRight = false;
 			enemy.collidesTop = false;
 			enemy.collides = false;
+
+			if (!bullets.isEmpty()) {
+				Iterator<Bullet> bulletIterator = bullets.iterator();
+				while (bulletIterator.hasNext()) {
+					Bullet bullet = bulletIterator.next();
+					bullet.update();
+					if (bullet.ownBullet){
+						if (enemy.boundingBox.intersect(bullet.boundingBox) && !bullet.hasCollided) {
+							enemy.damage(bullet.damage);
+							if (enemy.hp<=0){
+								l.enemies.remove(enemy);
+							}
+							explosions.add(new Explosion(bullet.x, bullet.y, l));
+							bullet.hasCollided=true;
+							bulletsToRemove.add(bullet);
+						}
+					}
+				}
+			}
 
 			// Collision
 			for (int i = 0; i < l.tiles.size(); i++) {
@@ -310,7 +355,7 @@ public class Platformer extends JFrame {
 
 	public void drawBullets(Graphics2D g2d){
 		for (Bullet bullet : bullets) {
-			g2d.drawImage(bullet.image, bullet.x, bullet.y, this);
+			g2d.drawImage(bullet.image, bullet.x - (int) l.offsetX, bullet.y, this);
 		}
 	}
 	public void drawHPMana(Graphics2D g2d){
@@ -343,7 +388,14 @@ public class Platformer extends JFrame {
 		}
 	}
 	public void drawShield(Graphics2D g2d){
-		if (getPlayer().shield != null) {
+		if (getPlayer().hasShield) {
+			int shieldWidth = 100;
+			int shieldHeight = 100;
+
+			int playerCenterX = (int) (p.pos.x - l.offsetX) + (p.tilesWalk.get(0).getWidth() / 2);
+			int playerCenterY = (int) p.pos.y + (p.tilesWalk.get(0).getHeight() / 2);
+
+			g2d.drawOval(playerCenterX - shieldWidth / 2, playerCenterY - shieldHeight / 2, shieldWidth, shieldHeight);
 
 		}
 	}

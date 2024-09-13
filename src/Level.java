@@ -7,7 +7,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -17,7 +19,7 @@ public class Level {
 	Vec2 lvlSize;
 	float offsetX;
 	ArrayList<Tile> tiles;
-	ArrayList<Enemy> enemies = new ArrayList<>();
+	List<Enemy> enemies = new CopyOnWriteArrayList<>();;
 
 	public Level(String levelMapPath, String levelBackgroundMapPath) throws IOException {
 		try {
@@ -126,7 +128,7 @@ public class Level {
 					float yPosition = y*Tile.tileSize;
 					Random r = new Random();
 					double d = r.nextDouble();
-					if (d>0.2 && d<0.23){
+					if (d>0.2 && d<0.3){
 						Enemy enemy = new Enemy(this, (int) xPosition, (int) yPosition-70);
 						enemies.add(enemy);
 					}

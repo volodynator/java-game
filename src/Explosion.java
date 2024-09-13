@@ -10,7 +10,7 @@ public class Explosion {
     private int currentFrame = 0;
     private int x, y;
     private boolean finished = false;
-    private int frameDelay = 10;
+    private int frameDelay = 3;
     private int frameCount = 0;
 
     public Explosion(int x, int y, Level level) {

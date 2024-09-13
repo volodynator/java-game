@@ -13,8 +13,12 @@ public class Bullet {
     BoundingBox boundingBox;
     int damage;
     boolean hasCollided = false;
+    boolean ownBullet;
 
     BufferedImage image = ImageIO.read(new File("assets/ourAssets/blueBall.png"));
+
+    int width = 70;
+    int height = 70;
 
     public Bullet(int startX, int startY, int damage) throws IOException {
         this.startX = startX;
@@ -22,25 +26,40 @@ public class Bullet {
         this.x = startX;
         this.y = startY;
         this.damage = damage;
-        boundingBox = new BoundingBox(x, y, x+70, y+70);
+        boundingBox = new BoundingBox(x, y, x + width, y + height);
     }
-    public void update(){
-        if (movingLeft){
-            x-=4;
+
+    public void update() {
+        if (movingLeft) {
+            x -= 4;
+        } else {
+            x += 4;
         }
-        else {
-            x+=4;
-        }
+
         updateBoundingBox();
     }
-    public boolean delete(){
-        return x - startX>range;
-    }
-    public void updateBoundingBox(){
-        boundingBox.min.x = x;
-        boundingBox.min.y = y;
 
-        boundingBox.max.x = x+70;
-        boundingBox.max.y = y+70;
+    public boolean delete() {
+        return Math.abs(x - startX) > range;
     }
+
+    public void updateBoundingBox() {
+        if (movingLeft) {
+
+            boundingBox.min.x = x;
+            boundingBox.max.x = x + width;
+        } else {
+
+            boundingBox.min.x = x;
+            boundingBox.max.x = x + width;
+        }
+
+        boundingBox.min.y = y;
+        boundingBox.max.y = y + height;
+    }
+    public boolean shouldBeRemoved() {
+        return Math.abs(x - startX) > range || x < 0;
+    }
+
 }
+
