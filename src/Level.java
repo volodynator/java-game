@@ -40,11 +40,8 @@ public class Level {
 				// Tile images
 				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img_2.png"))); //lava
 				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img.png"))); //grass
-
-//				//TODO draw gold and dirt
-//				Tile.images.add(ImageIO.read(new File("assets/ourAssets/gold.png"))); //gold
-//				Tile.images.add(ImageIO.read(new File("assets/ourAssets/dirt.png")));
 				Tile.images.add(ImageIO.read(new File("assets/ourAssets/ground.png")));
+				Tile.images.add(ImageIO.read(new File("assets/ourAssets/gold.png")));
 
 
 
@@ -141,8 +138,8 @@ public class Level {
 					}
 					t = new Tile(1, xPosition, yPosition);
 				}
-//				if (color.equals(Color.YELLOW))
-//					t = new Tile(2,x*Tile.tileSize,y*Tile.tileSize,false);
+				if (color.equals(Color.YELLOW))
+					t = new Tile(3,x*Tile.tileSize,y*Tile.tileSize,false);
 //				if (color.equals(Color.ORANGE))
 //					t = new Tile(3,x*Tile.tileSize,y*Tile.tileSize,false	);
 
