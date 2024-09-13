@@ -247,7 +247,9 @@ public class Platformer extends JFrame {
 				Iterator<Bullet> bulletIterator = bullets.iterator();
 				while (bulletIterator.hasNext()) {
 					Bullet bullet = bulletIterator.next();
-					bullet.update();
+					if (bullet != null) {
+						bullet.update();
+					}
 					if (bullet.ownBullet){
 						if (enemy.boundingBox.intersect(bullet.boundingBox) && !bullet.hasCollided) {
 							enemy.damage(bullet.damage);

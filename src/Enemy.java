@@ -54,9 +54,9 @@ public class Enemy {
             BufferedImage imageWalk;
             BufferedImage imageHalf;
 
-            imageWalk = ImageIO.read(new File("assets/Enemies/slimeWalk1.png"));
+            imageWalk = ImageIO.read(new File("assets/ourAssets/enemy/export 10.png"));
             tilesWalk.add(imageWalk);
-            imageHalf = ImageIO.read(new File("assets/Enemies/slimeWalk2.png"));
+            imageHalf = ImageIO.read(new File("assets/ourAssets/enemy/export 11.png"));
             tilesWalk.add(imageHalf);
 
         } catch (IOException e) {
