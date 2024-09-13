@@ -194,7 +194,7 @@ public class Platformer extends JFrame {
 
 			Tile tile = l.tiles.get(i);
 
-			float epsilon = 8.f; // experiment with this value. If too low,the player might get stuck when walking over the
+			float epsilon = 12.f; // experiment with this value. If too low,the player might get stuck when walking over the
 			// ground. If too high, it can cause glitching inside/through walls
 
 			Vec2 overlapSize = tile.bb.OverlapSize(p.boundingBox);
@@ -373,6 +373,20 @@ public class Platformer extends JFrame {
 			g2d.fillRoundRect(50, 90, getPlayer().mana * 3, 20, 4, 4);
 			notEnoughMana = false;
 		}
+		int rectBottom = 110;
+
+		g2d.setFont(new Font("Serif", Font.ITALIC | Font.BOLD, 28));
+		g2d.setColor(Color.WHITE);
+
+		FontMetrics metrics = g2d.getFontMetrics();
+
+		int yPosition = rectBottom - metrics.getHeight();
+
+		g2d.setColor(Color.BLACK);
+		g2d.drawString("Enemies left " + l.enemies.size(), 402, yPosition + 2);
+
+		g2d.setColor(Color.WHITE);
+		g2d.drawString("Enemies left " + l.enemies.size(), 400, yPosition);
 	}
 	public void drawSkills(Graphics2D g2d){
 		int space = 0;

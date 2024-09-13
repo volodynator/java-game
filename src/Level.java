@@ -19,7 +19,8 @@ public class Level {
 	Vec2 lvlSize;
 	float offsetX;
 	ArrayList<Tile> tiles;
-	List<Enemy> enemies = new CopyOnWriteArrayList<>();;
+	List<Enemy> enemies = new CopyOnWriteArrayList<>();
+	public static final Color VERY_DARK_GREY = new Color(51,51,51);
 
 	public Level(String levelMapPath, String levelBackgroundMapPath) throws IOException {
 		try {
@@ -40,9 +41,10 @@ public class Level {
 				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img_2.png"))); //lava
 				Tile.images.add(ImageIO.read(new File("assets/ourAssets/img.png"))); //grass
 
-				//TODO draw gold and dirt
-				Tile.images.add(ImageIO.read(new File("assets/ourAssets/gold.png"))); //gold
-				Tile.images.add(ImageIO.read(new File("assets/ourAssets/dirt.png"))); //dirt
+//				//TODO draw gold and dirt
+//				Tile.images.add(ImageIO.read(new File("assets/ourAssets/gold.png"))); //gold
+//				Tile.images.add(ImageIO.read(new File("assets/ourAssets/dirt.png")));
+				Tile.images.add(ImageIO.read(new File("assets/ourAssets/ground.png")));
 
 
 
@@ -122,6 +124,8 @@ public class Level {
 
 				if (color.equals(Color.BLUE))
 					t = new TileWater(0,x*Tile.tileSize,y*Tile.tileSize);
+				if (color.equals(Color.GREEN))
+					t = new Tile(2,x*Tile.tileSize,y*Tile.tileSize);
 				if (color.equals(Color.BLACK)){
 
 					float xPosition = x*Tile.tileSize;
@@ -137,10 +141,10 @@ public class Level {
 					}
 					t = new Tile(1, xPosition, yPosition);
 				}
-				if (color.equals(Color.YELLOW))
-					t = new Tile(2,x*Tile.tileSize,y*Tile.tileSize,false);
-				if (color.equals(Color.ORANGE))
-					t = new Tile(3,x*Tile.tileSize,y*Tile.tileSize,false	);
+//				if (color.equals(Color.YELLOW))
+//					t = new Tile(2,x*Tile.tileSize,y*Tile.tileSize,false);
+//				if (color.equals(Color.ORANGE))
+//					t = new Tile(3,x*Tile.tileSize,y*Tile.tileSize,false	);
 
 
 				if(t!=null) {

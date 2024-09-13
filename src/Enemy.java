@@ -14,7 +14,7 @@ public class Enemy {
     boolean jump = false, walkingLeft = false, walkingRight = false;
     boolean collidesTop = false, collidesDown = false, collidesLeft = false, collidesRight = false, collides = false;
 
-    boolean facingLeft = false;
+    boolean facingLeft = true;
 
     Vec2 pos;
     Vec2 posLastFrame;
@@ -53,30 +53,11 @@ public class Enemy {
             // Tiles for movement animation
             BufferedImage imageWalk;
             BufferedImage imageHalf;
-            BufferedImage imageEmpty;
 
-            imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk01.png"));
+            imageWalk = ImageIO.read(new File("assets/Enemies/slimeWalk1.png"));
             tilesWalk.add(imageWalk);
-            imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk02.png"));
+            imageHalf = ImageIO.read(new File("assets/Enemies/slimeWalk2.png"));
             tilesWalk.add(imageHalf);
-            imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk03.png"));
-            tilesWalk.add(imageEmpty);
-            imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk04.png"));
-            tilesWalk.add(imageWalk);
-            imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk05.png"));
-            tilesWalk.add(imageHalf);
-            imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk06.png"));
-            tilesWalk.add(imageEmpty);
-            imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk07.png"));
-            tilesWalk.add(imageWalk);
-            imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk08.png"));
-            tilesWalk.add(imageHalf);
-            imageEmpty = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk09.png"));
-            tilesWalk.add(imageEmpty);
-            imageWalk = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk10.png"));
-            tilesWalk.add(imageWalk);
-            imageHalf = ImageIO.read(new File(Platformer.BasePath + "Player/p1_walk/PNG/p1_walk11.png"));
-            tilesWalk.add(imageWalk);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -220,7 +201,7 @@ public class Enemy {
     private BufferedImage getNextTile() {
         if ((walkingLeft || walkingRight)) {
             moveCounter++;
-            if(moveCounter>=3) {
+            if(moveCounter>=1) {
                 displayedAnimationState++;
                 moveCounter = 0;
             }
@@ -229,7 +210,7 @@ public class Enemy {
             }
             return tilesWalk.get(displayedAnimationState);
         }
-        return tilesWalk.get(7);
+        return tilesWalk.get(1);
     }
 
     public void damage(int points){
