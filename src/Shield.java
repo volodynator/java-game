@@ -12,8 +12,14 @@ public class Shield extends Item{
 
     @Override
     public void use() throws IOException, NotEnoughManaExeption {
-        level.player.shield = new Shield(level);
-        level.player.hasShield=true;
-        level.player.mana-=50;
+        if (level.player.mana>=50){
+            level.player.shield = new Shield(level);
+            level.player.hasShield=true;
+            level.player.mana-=50;
+        }
+        else {
+            throw new NotEnoughManaExeption();
+        }
+
     }
 }
