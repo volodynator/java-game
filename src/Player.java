@@ -241,7 +241,7 @@ public class Player {
 		else {
 			hp+=points;
 		}
-		this.playSound("assets/Sound/burp-1.wav");
+		this.playSound("assets/ourAssets/effects/sound_heal.wav");
 	}
 	public void manaRegeneration(int points){
 		if (mana+points>100){
@@ -250,7 +250,7 @@ public class Player {
 		else {
 			mana+=points;
 		}
-		this.playSound("assets/Sound/magic-chime-01 2.wav");
+		this.playSound("assets/ourAssets/effects/sound_mana.wav");
 	}
 	public void damage(int points){
 		hp -= points;

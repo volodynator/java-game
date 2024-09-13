@@ -22,7 +22,7 @@ public class Gun extends Weapon{
                 blt.movingLeft = true;
             }
             level.player.bullets.add(blt);
-            level.player.playSound("assets\\Sound\\gun-gunshot-01.wav");
+            level.player.playSound("assets/ourAssets/effects/sound_fireball.wav");
         }
         else {
             throw new NotEnoughManaExeption();

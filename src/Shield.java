@@ -16,6 +16,7 @@ public class Shield extends Item{
             level.player.shield = new Shield(level);
             level.player.hasShield=true;
             level.player.mana-=50;
+            level.player.playSound("assets/ourAssets/effects/sound_shield_create.wav");
         }
         else {
             throw new NotEnoughManaExeption();

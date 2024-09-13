@@ -179,6 +179,7 @@ public class Platformer extends JFrame {
 							}
 							else {
 								p.hasShield=false;
+								p.playSound("assets/ourAssets/effects/sound_shield_destroy.wav");
 							}
 						}
 						explosions.add(new Explosion(bullet.x, bullet.y, l));

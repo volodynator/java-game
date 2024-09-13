@@ -17,7 +17,7 @@ public class EnemyGun {
             blt.movingLeft = true;
         }
         enemy.bullets.add(blt);
-        level.player.playSound("assets\\Sound\\gun-gunshot-01.wav");
+        level.player.playSound("assets/ourAssets/effects/sound_fireball.wav");
     }
 
 }
